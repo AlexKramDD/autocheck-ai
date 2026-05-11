@@ -88,12 +88,17 @@ textarea{resize:vertical;min-height:62px}
 .btn-danger:hover{background:rgba(248,113,113,.08)}
 .act-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
 
-/* SPEEDOMETER */
-.gauge-wrap{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:20px 20px 14px;margin-bottom:14px;text-align:center;backdrop-filter:blur(8px);animation:fadeUp .4s ease both}
-.gauge-wrap .rsec-hd{text-align:left}
-#gauge-svg{width:100%;max-width:280px;display:block;margin:0 auto}
-.gauge-label{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:900;letter-spacing:.02em;margin-top:-2px}
-.gauge-sub{font-size:13.5px;color:var(--text2);margin-top:6px;line-height:1.6;max-width:500px;margin-left:auto;margin-right:auto}
+
+/* RISK BAR */
+.risk-card{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:20px;margin-bottom:14px;backdrop-filter:blur(8px);animation:fadeUp .4s ease both}
+.risk-track{height:8px;border-radius:4px;background:linear-gradient(90deg,rgba(52,211,153,.5) 0%,rgba(245,158,11,.5) 50%,rgba(224,122,0,.5) 100%);position:relative;margin:14px 0 8px}
+.risk-dot{width:20px;height:20px;border-radius:50%;background:var(--surf);border:3px solid;position:absolute;top:50%;transform:translate(-50%,-50%);box-shadow:0 0 10px currentColor}
+.risk-range-labels{display:flex;justify-content:space-between;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.b-orange{background:rgba(224,122,0,.12);color:#E07A00;border:1px solid rgba(224,122,0,.3)}
+/* HSN TSN */
+.hsn-toggle{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;cursor:pointer;display:flex;align-items:center;gap:6px;padding:10px 0 4px;border-top:1px solid var(--bd);margin-top:8px;transition:color .15s;user-select:none}
+.hsn-toggle:hover{color:var(--blue)}
+.hsn-section{display:none;padding-top:8px}
 
 /* RESULT SECTIONS */
 .rsec{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:18px 20px;margin-bottom:12px;backdrop-filter:blur(8px);animation:fadeUp .4s ease both}
@@ -212,9 +217,9 @@ textarea{resize:vertical;min-height:62px}
         <span class="credits-lbl" data-i18n="creditsLbl">анализов</span>
       </div>
       <div class="lang-sw">
-        <button class="lbtn on" onclick="setLang('ru')">RU</button>
-        <button class="lbtn" onclick="setLang('de')">DE</button>
+        <button class="lbtn on" onclick="setLang('de')">DE</button>
         <button class="lbtn" onclick="setLang('en')">EN</button>
+        <button class="lbtn" onclick="setLang('ru')">RU</button>
       </div>
     </div>
   </div>
@@ -236,7 +241,7 @@ textarea{resize:vertical;min-height:62px}
     <div class="fg fg-3">
       <div class="fld"><label data-i18n="lMake">Марка</label><input type="text" id="f-make" data-i18n-ph="phMake" oninput="scheduleCarFetch()" placeholder="BMW, Toyota…"/></div>
       <div class="fld"><label data-i18n="lModel">Модель</label><input type="text" id="f-model" data-i18n-ph="phModel" oninput="scheduleCarFetch()" placeholder="320d, Corolla…"/></div>
-      <div class="fld"><label data-i18n="lYear">Год</label><input type="number" id="f-year" placeholder="2018" min="1985" max="2025" oninput="scheduleCarFetch()"/></div>
+      <div class="fld"><label data-i18n="lYear">Год</label><input type="number" id="f-year" placeholder="2019" min="1985" max="2026" oninput="scheduleCarFetch()"/></div>
     </div>
     <div id="car-status" style="display:none;font-size:11px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin:-2px 0 8px;display:flex;align-items:center;gap:7px"></div>
     <div class="fg fg-4">
@@ -269,6 +274,22 @@ textarea{resize:vertical;min-height:62px}
     <div class="fg fg-n" style="margin-bottom:12px">
       <div class="fld"><label data-i18n="lPrice">Цена (€)</label><input type="number" id="f-price" placeholder="14500"/></div>
       <div class="fld"><label data-i18n="lNotes">Дополнительно</label><input type="text" id="f-notes" data-i18n-ph="phNotes" placeholder="один владелец, полное ТО у дилера…"/></div>
+    </div>
+
+    <div class="hsn-toggle" onclick="toggleHSN()" id="hsnToggle">
+      <span id="hsnArrow">▸</span> <span data-i18n="hsnLabel">HSN / TSN — Fahrzeugschein (optional)</span>
+    </div>
+    <div class="hsn-section" id="hsnSection">
+      <div class="fg fg-n" style="margin-bottom:8px">
+        <div class="fld">
+          <label data-i18n="lHSN">HSN <span style="font-weight:400;text-transform:none">(4 Ziffern)</span></label>
+          <input type="text" id="f-hsn" placeholder="z.B. 0005" maxlength="4" style="font-family:'JetBrains Mono',monospace"/>
+        </div>
+        <div class="fld">
+          <label data-i18n="lTSN">TSN <span style="font-weight:400;text-transform:none">(3 Zeichen)</span></label>
+          <input type="text" id="f-tsn" placeholder="z.B. AHF" maxlength="6" style="font-family:'JetBrains Mono',monospace"/>
+        </div>
+      </div>
     </div>
     <button class="btn btn-primary" id="analyseBtn" onclick="doAnalyse()">⚡ <span data-i18n="btnAnalyse">Запустить анализ</span></button>
   </div>
@@ -321,12 +342,12 @@ textarea{resize:vertical;min-height:62px}
 
 <script>
 const I={
-ru:{tagline:'Советник покупателя',creditsLbl:'анализов',tabAnalyse:'Анализ',tabHistory:'История',tabCompare:'Сравнение',apiTitle:'API-ключ',apiHide:'Скрыть',apiShow:'Показать',apiDesc:'Нужен ключ Anthropic API: <a href="https://console.anthropic.com/keys" target="_blank" style="color:var(--blue)">console.anthropic.com/keys</a>. Хранится только в памяти вкладки.',apiSave:'Сохранить',apiNotSet:'Ключ не введён',apiSaved:'Ключ сохранён',apiErr:'Неверный формат',formTitle:'Данные об автомобиле',lMake:'Марка',lModel:'Модель',lYear:'Год',lMileage:'Пробег (тыс. км)',lBody:'Кузов',lEngine:'Двигатель',lTrans:'Трансмиссия',lPrice:'Цена (€)',lNotes:'Дополнительно',phMake:'BMW, Toyota, VW…',phModel:'320d, Corolla, Golf…',phNotes:'один владелец, ТО у дилера…',oSel:'— выбрать —',oSedan:'Седан',oHatch:'Хэтчбек',oEstate:'Универсал',oSUV:'Внедорожник / SUV',oCoupe:'Купе',oConv:'Кабриолет',oVan:'Минивэн',oPickup:'Пикап',oPetrol:'Бензин',oDiesel:'Дизель',oHybrid:'Гибрид (HEV)',oPHEV:'Plug-in Hybrid',oEV:'Электро',oLPG:'Газ (LPG)',oManual:'Механика',oAuto:'Автомат',oDSG:'DSG / Робот',oCVT:'Вариатор',btnAnalyse:'Запустить анализ',btnShare:'Поделиться',btnPDF:'Печать',btnAddCmp:'В сравнение',btnNew:'Новый анализ',sRisk:'Оценка риска',sIssues:'Проблемы модели',sCheck:'Чек-лист осмотра',sQs:'Вопросы продавцу',sFlags:'Стоп-сигналы',sPrice:'Оценка цены',sTip:'Главный совет',rLow:'Низкий риск',rMed:'Средний риск',rHigh:'Высокий риск',svCrit:'Критично',svWarn:'Внимание',svOk:'OK',pFair:'✓ Цена OK',pHigh:'↑ Завышена',pLow:'↓ Занижена',loadMsg:'Анализирую…',loadSub:'Изучаю форумы, базы данных, известные проблемы модели…',toastCopy:'Ссылка скопирована!',toastCmpAdd:'Добавлено в сравнение',toastCmpMax:'Максимум 3 авто',noKey:'Введите API-ключ.',noMake:'Укажите марку и модель.',errPfx:'Ошибка: ',noCredits:'Кредиты закончились',hEmpty:'История пуста',hEmptySub:'Здесь будут ваши анализы',hView:'Открыть',hDel:'Удалить',hClear:'Очистить историю',cEmpty:'Нет авто для сравнения',cEmptySub:'Анализируйте авто и нажимайте «В сравнение»',cClear:'Очистить',cTitle:'Сравнение',cRisk:'Риск',cIssues:'Проблем',cPrice:'Цена',cQs:'Вопросов',cView:'Открыть',modalTitle:'Выберите пакет',modalSub:'Один анализ ~€0.02 фактических затрат на API',pkg1n:'Старт',pkg2n:'Стандарт',pkg3n:'Про',analyses:'анализов',popular:'Популярно',buyNow:'Купить',pkg1ppu:'€0.40 / анализ',pkg2ppu:'€0.35 / анализ',pkg3ppu:'€0.34 / анализ',demoNote:'🚧 Демо-режим: оплата не подключена — кредиты добавляются сразу. Для запуска: подключите Stripe Checkout.',credAdded:'кредитов добавлено!'},
-de:{tagline:'Fahrzeugberater',creditsLbl:'Analysen',tabAnalyse:'Analyse',tabHistory:'Verlauf',tabCompare:'Vergleich',apiTitle:'API-Schlüssel',apiHide:'Verbergen',apiShow:'Anzeigen',apiDesc:'API-Schlüssel erforderlich: <a href="https://console.anthropic.com/keys" target="_blank" style="color:var(--blue)">console.anthropic.com/keys</a>',apiSave:'Speichern',apiNotSet:'Kein Schlüssel',apiSaved:'Gespeichert',apiErr:'Ungültiges Format',formTitle:'Fahrzeugdaten',lMake:'Marke',lModel:'Modell',lYear:'Baujahr',lMileage:'Km-Stand (Tsd.)',lBody:'Karosserie',lEngine:'Motor',lTrans:'Getriebe',lPrice:'Preis (€)',lNotes:'Weitere Angaben',phMake:'BMW, Toyota, VW…',phModel:'320d, Corolla, Golf…',phNotes:'ein Vorbesitzer, Scheckheft…',oSel:'— wählen —',oSedan:'Limousine',oHatch:'Schrägheck',oEstate:'Kombi',oSUV:'SUV',oCoupe:'Coupé',oConv:'Cabriolet',oVan:'Van',oPickup:'Pickup',oPetrol:'Benzin',oDiesel:'Diesel',oHybrid:'Hybrid',oPHEV:'Plug-in Hybrid',oEV:'Elektro',oLPG:'LPG',oManual:'Schaltgetriebe',oAuto:'Automatik',oDSG:'DSG',oCVT:'CVT',btnAnalyse:'Analyse starten',btnShare:'Teilen',btnPDF:'Drucken',btnAddCmp:'Vergleich',btnNew:'Neue Analyse',sRisk:'Risikobewertung',sIssues:'Modellprobleme',sCheck:'Checkliste',sQs:'Fragen an Verkäufer',sFlags:'Warnsignale',sPrice:'Preisbewertung',sTip:'Wichtigster Tipp',rLow:'Geringes Risiko',rMed:'Mittleres Risiko',rHigh:'Hohes Risiko',svCrit:'Kritisch',svWarn:'Achtung',svOk:'OK',pFair:'✓ Preis OK',pHigh:'↑ Zu hoch',pLow:'↓ Zu niedrig',loadMsg:'Analysiere…',loadSub:'Prüfe Foren, Datenbanken, bekannte Probleme…',toastCopy:'Link kopiert!',toastCmpAdd:'Zum Vergleich hinzugefügt',toastCmpMax:'Max. 3 Fahrzeuge',noKey:'API-Schlüssel eingeben.',noMake:'Marke und Modell angeben.',errPfx:'Fehler: ',noCredits:'Kein Guthaben',hEmpty:'Kein Verlauf',hEmptySub:'Ihre Analysen erscheinen hier',hView:'Öffnen',hDel:'Löschen',hClear:'Verlauf löschen',cEmpty:'Keine Fahrzeuge',cEmptySub:'Fahrzeuge analysieren und vergleichen',cClear:'Leeren',cTitle:'Vergleich',cRisk:'Risiko',cIssues:'Probleme',cPrice:'Preis',cQs:'Fragen',cView:'Öffnen',modalTitle:'Paket wählen',modalSub:'Eine Analyse kostet ca. €0.02 API-Kosten',pkg1n:'Starter',pkg2n:'Standard',pkg3n:'Pro',analyses:'Analysen',popular:'Beliebt',buyNow:'Kaufen',pkg1ppu:'€0.40 / Analyse',pkg2ppu:'€0.35 / Analyse',pkg3ppu:'€0.34 / Analyse',demoNote:'🚧 Demo-Modus: Zahlung nicht verbunden — Guthaben sofort hinzugefügt. Für Produktion: Stripe Checkout verbinden.',credAdded:'Analysen hinzugefügt!'},
-en:{tagline:'Used Car Advisor',creditsLbl:'analyses',tabAnalyse:'Analysis',tabHistory:'History',tabCompare:'Compare',apiTitle:'API Key',apiHide:'Hide',apiShow:'Show',apiDesc:'Anthropic API key required: <a href="https://console.anthropic.com/keys" target="_blank" style="color:var(--blue)">console.anthropic.com/keys</a>',apiSave:'Save',apiNotSet:'No key entered',apiSaved:'Key saved',apiErr:'Invalid format',formTitle:'Vehicle Details',lMake:'Make',lModel:'Model',lYear:'Year',lMileage:'Mileage (k km)',lBody:'Body',lEngine:'Engine',lTrans:'Transmission',lPrice:'Price (€)',lNotes:'Notes',phMake:'BMW, Toyota, VW…',phModel:'320d, Corolla, Golf…',phNotes:'one owner, full service history…',oSel:'— select —',oSedan:'Saloon',oHatch:'Hatchback',oEstate:'Estate',oSUV:'SUV',oCoupe:'Coupé',oConv:'Convertible',oVan:'MPV',oPickup:'Pickup',oPetrol:'Petrol',oDiesel:'Diesel',oHybrid:'Hybrid',oPHEV:'Plug-in Hybrid',oEV:'Electric',oLPG:'LPG',oManual:'Manual',oAuto:'Automatic',oDSG:'DSG/DCT',oCVT:'CVT',btnAnalyse:'Run Analysis',btnShare:'Share',btnPDF:'Print',btnAddCmp:'Compare',btnNew:'New Analysis',sRisk:'Risk Assessment',sIssues:'Known Issues',sCheck:'Inspection Checklist',sQs:'Questions for Seller',sFlags:'Walk Away If…',sPrice:'Price Evaluation',sTip:'Key Advice',rLow:'Low Risk',rMed:'Medium Risk',rHigh:'High Risk',svCrit:'Critical',svWarn:'Warning',svOk:'OK',pFair:'✓ Fair Price',pHigh:'↑ Overpriced',pLow:'↓ Suspiciously Low',loadMsg:'Analysing…',loadSub:'Checking forums, databases, known model issues…',toastCopy:'Link copied!',toastCmpAdd:'Added to comparison',toastCmpMax:'Max 3 vehicles',noKey:'Enter API key.',noMake:'Enter make and model.',errPfx:'Error: ',noCredits:'No credits left',hEmpty:'No history yet',hEmptySub:'Your analyses will appear here',hView:'View',hDel:'Delete',hClear:'Clear history',cEmpty:'Nothing to compare',cEmptySub:'Analyse vehicles and add to comparison',cClear:'Clear',cTitle:'Comparison',cRisk:'Risk',cIssues:'Issues',cPrice:'Price',cQs:'Questions',cView:'View',modalTitle:'Choose a package',modalSub:'One analysis costs ~€0.02 actual API cost',pkg1n:'Starter',pkg2n:'Standard',pkg3n:'Pro',analyses:'analyses',popular:'Popular',buyNow:'Buy',pkg1ppu:'€0.40 / analysis',pkg2ppu:'€0.35 / analysis',pkg3ppu:'€0.34 / analysis',demoNote:'🚧 Demo mode: payment not connected — credits added instantly. Connect Stripe Checkout for production.',credAdded:'credits added!'}
+ru:{tagline:'Советник покупателя',creditsLbl:'анализов',tabAnalyse:'Анализ',tabHistory:'История',tabCompare:'Сравнение',apiTitle:'API-ключ',apiHide:'Скрыть',apiShow:'Показать',apiDesc:'Нужен ключ Anthropic API: <a href="https://console.anthropic.com/keys" target="_blank" style="color:var(--blue)">console.anthropic.com/keys</a>. Хранится только в памяти вкладки.',apiSave:'Сохранить',apiNotSet:'Ключ не введён',apiSaved:'Ключ сохранён',apiErr:'Неверный формат',formTitle:'Данные об автомобиле',lMake:'Марка',lModel:'Модель',lYear:'Год',lMileage:'Пробег (тыс. км)',lBody:'Кузов',lEngine:'Двигатель',lTrans:'Трансмиссия',lPrice:'Цена (€)',lNotes:'Дополнительно',phMake:'BMW, Toyota, VW…',phModel:'320d, Corolla, Golf…',phNotes:'один владелец, ТО у дилера…',oSel:'— выбрать —',oSedan:'Седан',oHatch:'Хэтчбек',oEstate:'Универсал',oSUV:'Внедорожник / SUV',oCoupe:'Купе',oConv:'Кабриолет',oVan:'Минивэн',oPickup:'Пикап',oPetrol:'Бензин',oDiesel:'Дизель',oHybrid:'Гибрид (HEV)',oPHEV:'Plug-in Hybrid',oEV:'Электро',oLPG:'Газ (LPG)',oManual:'Механика',oAuto:'Автомат',oDSG:'DSG / Робот',oCVT:'Вариатор',btnAnalyse:'Запустить анализ',btnShare:'Поделиться',btnPDF:'Печать',btnAddCmp:'В сравнение',btnNew:'Новый анализ',sRisk:'Оценка риска',sIssues:'Проблемы модели',sCheck:'Чек-лист осмотра',sQs:'Вопросы продавцу',sFlags:'Стоп-сигналы',sPrice:'Оценка цены',sTip:'Главный совет',rLow:'Низкий риск',rMed:'Средний риск',rHigh:'Тщательно проверить',svCrit:'Критично',svWarn:'Внимание',svOk:'OK',pFair:'✓ Цена OK',pHigh:'↑ Завышена',pLow:'↓ Занижена',loadMsg:'Анализирую…',loadSub:'Изучаю форумы, базы данных, известные проблемы модели…',toastCopy:'Ссылка скопирована!',toastCmpAdd:'Добавлено в сравнение',toastCmpMax:'Максимум 3 авто',noKey:'Введите API-ключ.',noMake:'Укажите марку и модель.',errPfx:'Ошибка: ',noCredits:'Кредиты закончились',hEmpty:'История пуста',hEmptySub:'Здесь будут ваши анализы',hView:'Открыть',hDel:'Удалить',hClear:'Очистить историю',cEmpty:'Нет авто для сравнения',cEmptySub:'Анализируйте авто и нажимайте «В сравнение»',cClear:'Очистить',cTitle:'Сравнение',cRisk:'Риск',cIssues:'Проблем',cPrice:'Цена',cQs:'Вопросов',cView:'Открыть',modalTitle:'Выберите пакет',modalSub:'Один анализ ~€0.02 фактических затрат на API',pkg1n:'Старт',pkg2n:'Стандарт',pkg3n:'Про',analyses:'анализов',popular:'Популярно',buyNow:'Купить',pkg1ppu:'€0.40 / анализ',pkg2ppu:'€0.35 / анализ',pkg3ppu:'€0.34 / анализ',demoNote:'🚧 Демо-режим: оплата не подключена — кредиты добавляются сразу. Для запуска: подключите Stripe Checkout.',hsnLabel:'HSN / TSN — Техпаспорт (опционально)',lHSN:'HSN',lTSN:'TSN',riskAI:'Оценка AI',invalidCar:'Проверьте марку и модель — такой автомобиль не найден в базе. Уточните написание.',credAdded:'кредитов добавлено!'},
+de:{tagline:'Fahrzeugberater',creditsLbl:'Analysen',tabAnalyse:'Analyse',tabHistory:'Verlauf',tabCompare:'Vergleich',apiTitle:'API-Schlüssel',apiHide:'Verbergen',apiShow:'Anzeigen',apiDesc:'API-Schlüssel erforderlich: <a href="https://console.anthropic.com/keys" target="_blank" style="color:var(--blue)">console.anthropic.com/keys</a>',apiSave:'Speichern',apiNotSet:'Kein Schlüssel',apiSaved:'Gespeichert',apiErr:'Ungültiges Format',formTitle:'Fahrzeugdaten',lMake:'Marke',lModel:'Modell',lYear:'Baujahr',lMileage:'Km-Stand (Tsd.)',lBody:'Karosserie',lEngine:'Motor',lTrans:'Getriebe',lPrice:'Preis (€)',lNotes:'Weitere Angaben',phMake:'BMW, Toyota, VW…',phModel:'320d, Corolla, Golf…',phNotes:'ein Vorbesitzer, Scheckheft…',oSel:'— wählen —',oSedan:'Limousine',oHatch:'Schrägheck',oEstate:'Kombi',oSUV:'SUV',oCoupe:'Coupé',oConv:'Cabriolet',oVan:'Van',oPickup:'Pickup',oPetrol:'Benzin',oDiesel:'Diesel',oHybrid:'Hybrid',oPHEV:'Plug-in Hybrid',oEV:'Elektro',oLPG:'LPG',oManual:'Schaltgetriebe',oAuto:'Automatik',oDSG:'DSG',oCVT:'CVT',btnAnalyse:'Analyse starten',btnShare:'Teilen',btnPDF:'Drucken',btnAddCmp:'Vergleich',btnNew:'Neue Analyse',sRisk:'Risikobewertung',sIssues:'Modellprobleme',sCheck:'Checkliste',sQs:'Fragen an Verkäufer',sFlags:'Warnsignale',sPrice:'Preisbewertung',sTip:'Wichtigster Tipp',rLow:'Geringes Risiko',rMed:'Mittleres Risiko',rHigh:'Genauer prüfen',svCrit:'Kritisch',svWarn:'Achtung',svOk:'OK',pFair:'✓ Preis OK',pHigh:'↑ Zu hoch',pLow:'↓ Zu niedrig',loadMsg:'Analysiere…',loadSub:'Prüfe Foren, Datenbanken, bekannte Probleme…',toastCopy:'Link kopiert!',toastCmpAdd:'Zum Vergleich hinzugefügt',toastCmpMax:'Max. 3 Fahrzeuge',noKey:'API-Schlüssel eingeben.',noMake:'Marke und Modell angeben.',errPfx:'Fehler: ',noCredits:'Kein Guthaben',hEmpty:'Kein Verlauf',hEmptySub:'Ihre Analysen erscheinen hier',hView:'Öffnen',hDel:'Löschen',hClear:'Verlauf löschen',cEmpty:'Keine Fahrzeuge',cEmptySub:'Fahrzeuge analysieren und vergleichen',cClear:'Leeren',cTitle:'Vergleich',cRisk:'Risiko',cIssues:'Probleme',cPrice:'Preis',cQs:'Fragen',cView:'Öffnen',modalTitle:'Paket wählen',modalSub:'Eine Analyse kostet ca. €0.02 API-Kosten',pkg1n:'Starter',pkg2n:'Standard',pkg3n:'Pro',analyses:'Analysen',popular:'Beliebt',buyNow:'Kaufen',pkg1ppu:'€0.40 / Analyse',pkg2ppu:'€0.35 / Analyse',pkg3ppu:'€0.34 / Analyse',demoNote:'🚧 Demo-Modus: Zahlung nicht verbunden — Guthaben sofort hinzugefügt. Für Produktion: Stripe Checkout verbinden.',hsnLabel:'HSN / TSN — Fahrzeugschein (optional)',lHSN:'HSN',lTSN:'TSN',riskAI:'KI-Bewertung',invalidCar:'Marke oder Modell nicht gefunden. Bitte Schreibweise prüfen.',credAdded:'Analysen hinzugefügt!'},
+en:{tagline:'Used Car Advisor',creditsLbl:'analyses',tabAnalyse:'Analysis',tabHistory:'History',tabCompare:'Compare',apiTitle:'API Key',apiHide:'Hide',apiShow:'Show',apiDesc:'Anthropic API key required: <a href="https://console.anthropic.com/keys" target="_blank" style="color:var(--blue)">console.anthropic.com/keys</a>',apiSave:'Save',apiNotSet:'No key entered',apiSaved:'Key saved',apiErr:'Invalid format',formTitle:'Vehicle Details',lMake:'Make',lModel:'Model',lYear:'Year',lMileage:'Mileage (k km)',lBody:'Body',lEngine:'Engine',lTrans:'Transmission',lPrice:'Price (€)',lNotes:'Notes',phMake:'BMW, Toyota, VW…',phModel:'320d, Corolla, Golf…',phNotes:'one owner, full service history…',oSel:'— select —',oSedan:'Saloon',oHatch:'Hatchback',oEstate:'Estate',oSUV:'SUV',oCoupe:'Coupé',oConv:'Convertible',oVan:'MPV',oPickup:'Pickup',oPetrol:'Petrol',oDiesel:'Diesel',oHybrid:'Hybrid',oPHEV:'Plug-in Hybrid',oEV:'Electric',oLPG:'LPG',oManual:'Manual',oAuto:'Automatic',oDSG:'DSG/DCT',oCVT:'CVT',btnAnalyse:'Run Analysis',btnShare:'Share',btnPDF:'Print',btnAddCmp:'Compare',btnNew:'New Analysis',sRisk:'Risk Assessment',sIssues:'Known Issues',sCheck:'Inspection Checklist',sQs:'Questions for Seller',sFlags:'Walk Away If…',sPrice:'Price Evaluation',sTip:'Key Advice',rLow:'Low Risk',rMed:'Medium Risk',rHigh:'Inspect Carefully',svCrit:'Critical',svWarn:'Warning',svOk:'OK',pFair:'✓ Fair Price',pHigh:'↑ Overpriced',pLow:'↓ Suspiciously Low',loadMsg:'Analysing…',loadSub:'Checking forums, databases, known model issues…',toastCopy:'Link copied!',toastCmpAdd:'Added to comparison',toastCmpMax:'Max 3 vehicles',noKey:'Enter API key.',noMake:'Enter make and model.',errPfx:'Error: ',noCredits:'No credits left',hEmpty:'No history yet',hEmptySub:'Your analyses will appear here',hView:'View',hDel:'Delete',hClear:'Clear history',cEmpty:'Nothing to compare',cEmptySub:'Analyse vehicles and add to comparison',cClear:'Clear',cTitle:'Comparison',cRisk:'Risk',cIssues:'Issues',cPrice:'Price',cQs:'Questions',cView:'View',modalTitle:'Choose a package',modalSub:'One analysis costs ~€0.02 actual API cost',pkg1n:'Starter',pkg2n:'Standard',pkg3n:'Pro',analyses:'analyses',popular:'Popular',buyNow:'Buy',pkg1ppu:'€0.40 / analysis',pkg2ppu:'€0.35 / analysis',pkg3ppu:'€0.34 / analysis',demoNote:'🚧 Demo mode: payment not connected — credits added instantly. Connect Stripe Checkout for production.',hsnLabel:'HSN / TSN — Vehicle Documents (optional)',lHSN:'HSN',lTSN:'TSN',riskAI:'AI Assessment',invalidCar:'Make or model not recognised. Please check the spelling.',credAdded:'credits added!'}
 };
 
-let lang='ru', apiKey='';
+let lang='ru',apiKey='',apiVisible=true;
 let currentResult=null,currentFormData=null,currentDesc='';
 let credits=0,history=[],compareList=[];let activeTab='analyse';
 try{history=JSON.parse(localStorage.getItem('ac_hist')||'[]');}catch(e){history=[];}
@@ -340,7 +361,7 @@ function openModal(){document.getElementById('modal').classList.add('open');}
 function closeModal(){document.getElementById('modal').classList.remove('open');}
 function purchase(amt){credits+=amt;saveCredits();updateCreditsUI();closeModal();showToast(`⚡ ${amt} ${t('credAdded')}`);}
 
-function setLang(l){lang=l;document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('on'));document.querySelector(`.lbtn[onclick="setLang('${l}')"]`).classList.add('on');applyI18n();updateBadges();if(activeTab==='history')renderHistory();if(activeTab==='compare')renderCompare();}
+function setLang(l){lang=l;document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('on'));document.querySelector(`.lbtn[onclick="setLang('${l}')"]`).classList.add('on');applyI18n();updateBadges();if(activeTab==='history')renderHistory();if(activeTab==='compare')renderCompare();if(currentResult&&currentFormData&&activeTab==='analyse')renderResults(currentResult,currentFormData);}
 function applyI18n(){
   document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(el.tagName!=='INPUT'&&el.tagName!=='TEXTAREA')el.textContent=t(k);});
   document.querySelectorAll('[data-i18n-html]').forEach(el=>{el.innerHTML=t(el.getAttribute('data-i18n-html'));});
@@ -353,10 +374,13 @@ function refreshApiStatus(){const el=document.getElementById('apiStatus');if(api
 function toggleApi(){apiVisible=!apiVisible;document.getElementById('apiBody').style.display=apiVisible?'':'none';document.getElementById('apiToggle').textContent=apiVisible?t('apiHide'):t('apiShow');}
 function showTab(tab){activeTab=tab;document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));document.getElementById('pane-'+tab).classList.add('on');document.getElementById('ntab-'+tab).classList.add('on');if(tab==='history')renderHistory();if(tab==='compare')renderCompare();}
 function updateBadges(){document.getElementById('hbadge').textContent=history.length;document.getElementById('cbadge').textContent=compareList.length;}
-function getForm(){return{make:document.getElementById('f-make').value.trim(),model:document.getElementById('f-model').value.trim(),year:document.getElementById('f-year').value.trim(),mileage:document.getElementById('f-mileage').value.trim(),body:document.getElementById('f-body').value,bodyTxt:document.getElementById('f-body').selectedOptions[0]?.textContent||'',engine:document.getElementById('f-engine').value,engineTxt:document.getElementById('f-engine').selectedOptions[0]?.textContent||'',trans:document.getElementById('f-trans').value,transTxt:document.getElementById('f-trans').selectedOptions[0]?.textContent||'',price:document.getElementById('f-price').value.trim(),notes:document.getElementById('f-notes').value.trim()};}
-function fillForm(d){['make','model','year','mileage','body','engine','trans','price','notes'].forEach(k=>{const el=document.getElementById('f-'+k);if(el&&d[k]!==undefined)el.value=d[k];});}
-function buildDesc(d){const sep=lang==='de'?['Bj.','Tsd.km','Preis']:lang==='en'?['','k km','price']:['г.','тыс.км','цена'];return[d.make,d.model,d.year?`${sep[0]} ${d.year}`.trim():'',d.mileage?`${d.mileage} ${sep[1]}`:'',d.bodyTxt,d.engineTxt,d.transTxt,d.price?`${sep[2]} ${d.price} €`:'',d.notes].filter(Boolean).join(', ');}
-function buildPrompt(desc){const role={ru:'Ты — эксперт по покупке подержанных автомобилей с опытом в авторемонтных мастерских и знанием форумов владельцев.',de:'Du bist Experte für Gebrauchtwagenkauf mit Werkstatterfahrung.',en:'You are a used-car expert with workshop experience and knowledge of owner forums.'};const cmd={ru:`Строго по-русски. Авто: ${desc}`,de:`Nur Deutsch. Fahrzeug: ${desc}`,en:`English only. Vehicle: ${desc}`};return `${role[lang]}\n\n${cmd[lang]}\n\nReturn ONLY valid JSON, no markdown:\n{"riskLevel":"low"|"medium"|"high","riskSummary":"2 sentences","knownIssues":[{"severity":"critical"|"warning"|"ok","title":"short","detail":"1-2 sentences"}],"inspectionChecklist":[{"category":"name","items":["item"]}],"questionsForSeller":["q1","q2","q3","q4","q5","q6"],"priceFeedback":{"assessment":"fair"|"high"|"low","comment":"1 sentence"},"redFlags":["f1","f2","f3"],"tip":"1 key sentence"}\n\nGive 5 knownIssues, 4 checklist categories (3 items each), 6 questions, 3 red flags. Be specific to this model.`;}
+function getForm(){return{make:document.getElementById('f-make').value.trim(),model:document.getElementById('f-model').value.trim(),year:document.getElementById('f-year').value.trim(),mileage:document.getElementById('f-mileage').value.trim(),body:document.getElementById('f-body').value,bodyTxt:document.getElementById('f-body').selectedOptions[0]?.textContent||'',engine:document.getElementById('f-engine').value,engineTxt:document.getElementById('f-engine').selectedOptions[0]?.textContent||'',trans:document.getElementById('f-trans').value,transTxt:document.getElementById('f-trans').selectedOptions[0]?.textContent||'',price:document.getElementById('f-price').value.trim(),notes:document.getElementById('f-notes').value.trim(),hsn:document.getElementById('f-hsn')?.value.trim()||'',tsn:document.getElementById('f-tsn')?.value.trim()||''};}
+function fillForm(d){['make','model','year','mileage','body','engine','trans','price','notes','hsn','tsn'].forEach(k=>{const el=document.getElementById('f-'+k);if(el&&d[k]!==undefined)el.value=d[k];});}
+function buildDesc(d){const sep=lang==='de'?['Bj.','Tsd.km','Preis']:lang==='en'?['','k km','price']:['г.','тыс.км','цена'];return[d.make,d.model,d.year?`${sep[0]} ${d.year}`.trim():'',d.mileage?`${d.mileage} ${sep[1]}`:'',d.bodyTxt,d.engineTxt,d.transTxt,d.price?`${sep[2]} ${d.price} €`:'',d.notes,d.hsn?`HSN:${d.hsn}`:'',d.tsn?`TSN:${d.tsn}`:''].filter(Boolean).join(', ');}
+function buildPrompt(desc){const role={ru:'Ты — эксперт по покупке подержанных автомобилей с опытом в авторемонтных мастерских и знанием форумов владельцев.',de:'Du bist Experte für Gebrauchtwagenkauf mit Werkstatterfahrung.',en:'You are a used-car expert with workshop experience and knowledge of owner forums.'};const cmd={ru:`Строго по-русски. Авто: ${desc}`,de:`Nur Deutsch. Fahrzeug: ${desc}`,en:`English only. Vehicle: ${desc}`};return `${role[lang]}\n\n${cmd[lang]}\n\nReturn ONLY valid JSON, no markdown:\n{"riskLevel":"low"|"medium"|"high","riskSummary":"2 sentences","knownIssues":[{"severity":"critical"|"warning"|"ok","title":"short","detail":"1-2 sentences"}],"inspectionChecklist":[{"category":"name","items":["item"]}],"questionsForSeller":["q1","q2","q3","q4","q5","q6"],"priceFeedback":{"assessment":"fair"|"high"|"low","comment":"1 sentence"},"redFlags":["f1","f2","f3"],"tip":"1 key sentence"}\n\nCRITICAL: First verify that the make+model is a real production car. If not real or clearly misspelled, return ONLY: {"valid":false}
+If valid, return full JSON with "valid":true as first field.
+Give 5 knownIssues, 4 checklist categories (3 items each), 6 questions, 3 red flags.
+All cost estimates MUST be in EUR (€). Be specific to this exact model.`;}
 
 async function doAnalyse(){
   const d=getForm();if(!d.make||!d.model){showToast(t('noMake'));return;}
@@ -371,41 +395,20 @@ async function doAnalyse(){
     const raw=data.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
     let r;
     try{r=JSON.parse(raw);}catch(pe){let fixed=raw;if((fixed.match(/"/g)||[]).length%2!==0)fixed+='"';let depth=0;for(const c of fixed){if(c==='{'||c==='[')depth++;else if(c==='}'||c===']')depth--;}while(depth-->0)fixed+=']}';r=JSON.parse(fixed);}
+    if(r.valid===false){
+      document.getElementById('results').innerHTML=`<div class="rsec" style="border-color:rgba(245,158,11,.3);color:var(--amber);text-align:center;padding:24px">${t('invalidCar')}</div>`;
+      btn.disabled=false; return;
+    }
     currentResult=r;credits--;saveCredits();updateCreditsUI();
     renderResults(r,d);pushHistory(desc,r,d);updateBadges();
   }catch(e){document.getElementById('results').innerHTML=`<div class="rsec" style="border-color:rgba(248,113,113,.3);color:var(--red);">${t('errPfx')}${e.message}</div>`;}
   finally{btn.disabled=false;}
 }
 
-// SPEEDOMETER
-function ptc(cx,cy,r,a){const rad=(a-90)*Math.PI/180;return[cx+r*Math.cos(rad),cy+r*Math.sin(rad)];}
-function arcPath(cx,cy,r,a1,a2){const[x1,y1]=ptc(cx,cy,r,a1);const[x2,y2]=ptc(cx,cy,r,a2);const sw=((a2-a1)+360)%360;return`M${x1.toFixed(1)} ${y1.toFixed(1)} A${r} ${r} 0 ${sw>180?1:0} 1 ${x2.toFixed(1)} ${y2.toFixed(1)}`;}
-function buildGauge(riskLevel){
-  const cx=150,cy=140,R=100,sw=14,nL=80;
-  const nA={low:225,medium:0,high:135}[riskLevel]||0;
-  const nC={low:'#34D399',medium:'#F59E0B',high:'#F87171'}[riskLevel]||'#F59E0B';
-  const[nx,ny]=ptc(cx,cy,nL,nA);const[nb1x,nb1y]=ptc(cx,cy,9,nA+90);const[nb2x,nb2y]=ptc(cx,cy,9,nA-90);
-  const ticks=[225,247.5,270,292.5,315,337.5,0,22.5,45,67.5,90,112.5,135].map(a=>{const[ox,oy]=ptc(cx,cy,R+9,a);const[ix,iy]=ptc(cx,cy,R+17,a);return`<line x1="${ox.toFixed(1)}" y1="${oy.toFixed(1)}" x2="${ix.toFixed(1)}" y2="${iy.toFixed(1)}" stroke="rgba(255,255,255,0.14)" stroke-width="1.5" stroke-linecap="round"/>`;}).join('');
-  const[lx,ly]=ptc(cx,cy,R+27,270);const[mx,my]=ptc(cx,cy,R+27,0);const[hx,hy]=ptc(cx,cy,R+27,90);
-  return`<svg id="gauge-svg" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
-  <defs><filter id="ng"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-  <path d="${arcPath(cx,cy,R,225,135)}" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="${sw}" stroke-linecap="round"/>
-  <path d="${arcPath(cx,cy,R,225,315)}" fill="none" stroke="rgba(52,211,153,0.3)" stroke-width="${sw}" stroke-linecap="round"/>
-  <path d="${arcPath(cx,cy,R,315,45)}" fill="none" stroke="rgba(245,158,11,0.3)" stroke-width="${sw}" stroke-linecap="round"/>
-  <path d="${arcPath(cx,cy,R,45,135)}" fill="none" stroke="rgba(248,113,113,0.3)" stroke-width="${sw}" stroke-linecap="round"/>
-  ${ticks}
-  <text x="${lx.toFixed(1)}" y="${(ly+4).toFixed(1)}" text-anchor="middle" fill="rgba(52,211,153,.55)" font-family="Barlow Condensed,sans-serif" font-size="9" font-weight="700" letter-spacing="0.08em">LOW</text>
-  <text x="${mx.toFixed(1)}" y="${(my+4).toFixed(1)}" text-anchor="middle" fill="rgba(245,158,11,.55)" font-family="Barlow Condensed,sans-serif" font-size="9" font-weight="700" letter-spacing="0.08em">MED</text>
-  <text x="${hx.toFixed(1)}" y="${(hy+4).toFixed(1)}" text-anchor="middle" fill="rgba(248,113,113,.55)" font-family="Barlow Condensed,sans-serif" font-size="9" font-weight="700" letter-spacing="0.08em">HIGH</text>
-  <line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="${nC}" stroke-width="5" stroke-linecap="round" opacity="0.2" filter="url(#ng)"/>
-  <polygon points="${nx.toFixed(1)},${ny.toFixed(1)} ${nb1x.toFixed(1)},${nb1y.toFixed(1)} ${nb2x.toFixed(1)},${nb2y.toFixed(1)}" fill="${nC}" opacity="0.95"/>
-  <circle cx="${cx}" cy="${cy}" r="10" fill="#0D1120" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
-  <circle cx="${cx}" cy="${cy}" r="4.5" fill="${nC}"/>
-  </svg>`;
-}
+
 
 const RC={low:'var(--green)',medium:'var(--amber)',high:'var(--red)'};
-const RB={low:'b-green',medium:'b-amber',high:'b-red'};
+const RB={low:'b-green',medium:'b-amber',high:'b-orange'};
 const SD={critical:'d',warning:'w',ok:'ok'};
 const SB={critical:'b-red',warning:'b-amber',ok:'b-green'};
 const PB={fair:'b-green',high:'b-red',low:'b-amber'};
@@ -419,13 +422,7 @@ function renderResults(r,d){
     <button class="btn btn-outline" onclick="doAddCompare()">⚖️ ${t('btnAddCmp')}</button>
     <button class="btn btn-ghost" onclick="doNew()">✦ ${t('btnNew')}</button>
   </div>`;
-  h+=`<div class="gauge-wrap">
-    <div class="rsec-hd">🎯 ${t('sRisk')}</div>
-    ${buildGauge(r.riskLevel)}
-    <div class="gauge-label" style="color:${RC[r.riskLevel]||'var(--amber)'}">${t('r'+cap(r.riskLevel))}</div>
-    <div class="gauge-sub">${r.riskSummary}</div>
-  </div>`;
-  if(r.knownIssues?.length){h+=`<div class="rsec"><div class="rsec-hd">⚙ ${t('sIssues')}</div>`;r.knownIssues.forEach(i=>{h+=`<div class="issue"><div class="idot ${SD[i.severity]||'w'}"></div><div class="ibody"><strong>${i.title}</strong> <span class="badge ${SB[i.severity]||'b-amber'}">${t('sv'+cap(i.severity))}</span><p>${i.detail}</p></div></div>`;});h+=`</div>`;}
+    if(r.knownIssues?.length){h+=`<div class="rsec"><div class="rsec-hd">⚙ ${t('sIssues')}</div>`;r.knownIssues.forEach(i=>{h+=`<div class="issue"><div class="idot ${SD[i.severity]||'w'}"></div><div class="ibody"><strong>${i.title}</strong> <span class="badge ${SB[i.severity]||'b-amber'}">${t('sv'+cap(i.severity))}</span><p>${i.detail}</p></div></div>`;});h+=`</div>`;}
   if(r.inspectionChecklist?.length){h+=`<div class="rsec"><div class="rsec-hd">🔍 ${t('sCheck')}</div>`;r.inspectionChecklist.forEach(cat=>{h+=`<div class="ccat">${cat.category}</div>`;cat.items.forEach(item=>{h+=`<div class="citem"><div class="idot g" style="margin-top:5px"></div><span>${item}</span></div>`;});});h+=`</div>`;}
   if(r.questionsForSeller?.length){h+=`<div class="rsec"><div class="rsec-hd">💬 ${t('sQs')}</div>`;r.questionsForSeller.forEach((q,i)=>{h+=`<div class="qitem"><span class="qnum">${String(i+1).padStart(2,'0')}.</span><span>${q}</span></div>`;});h+=`</div>`;}
   if(r.redFlags?.length){h+=`<div class="rsec rsec-flag"><div class="rsec-hd">🚩 ${t('sFlags')}</div>`;r.redFlags.forEach(f=>{h+=`<div class="rfitem"><div class="idot d" style="flex-shrink:0;margin-top:5px"></div><span>${f}</span></div>`;});h+=`</div>`;}
@@ -447,6 +444,14 @@ function removeCompare(id){compareList=compareList.filter(c=>c.id!==id);try{sess
 function clearCompare(){compareList=[];try{sessionStorage.removeItem('ac_cmp');}catch(e){}updateBadges();renderCompare();}
 function viewFromCompare(id){const item=compareList.find(c=>c.id===id);if(!item)return;currentResult=item.result;currentDesc=item.desc;currentFormData=item.formData;if(item.formData)fillForm(item.formData);showTab('analyse');renderResults(item.result,item.formData||{});}
 function renderCompare(){const el=document.getElementById('clist');if(!compareList.length){el.innerHTML=`<div class="empty"><div class="empty-ic">⚖️</div><div class="empty-t">${t('cEmpty')}</div><div class="empty-s">${t('cEmptySub')}</div></div>`;return;}let h=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:.06em">${t('cTitle')}</div><button class="btn btn-danger" onclick="clearCompare()">${t('cClear')}</button></div><div class="cmp-grid" style="grid-template-columns:repeat(${compareList.length},1fr)">`;compareList.forEach(item=>{const r=item.result;const critCount=r.knownIssues?.filter(i=>i.severity==='critical').length||0;const pa=r.priceFeedback;h+=`<div class="cmp-card"><div class="cmp-name"><span>${item.desc}</span><button class="btn btn-ghost" style="padding:3px 8px;font-size:11px;flex-shrink:0" onclick="removeCompare(${item.id})">✕</button></div><div style="margin-bottom:12px"><div class="cmp-lbl">${t('cRisk')}</div><span class="badge ${RB[r.riskLevel]||'b-amber'}">${t('r'+cap(r.riskLevel))}</span></div><div style="margin-bottom:12px"><div class="cmp-lbl">${t('cIssues')}</div><div class="cmp-stat" style="color:${critCount?'var(--red)':'var(--text)'}">${r.knownIssues?.length||0}</div><div style="font-size:11px;color:var(--text2);margin-top:2px">${critCount} critical</div></div>${pa?`<div style="margin-bottom:12px"><div class="cmp-lbl">${t('cPrice')}</div><span class="badge ${PB[pa.assessment]||'b-amber'}">${t(PK[pa.assessment]||'pFair')}</span></div>`:''}<div style="margin-bottom:14px"><div class="cmp-lbl">${t('cQs')}</div><div class="cmp-stat" style="color:var(--amber)">${r.questionsForSeller?.length||0}</div></div><button class="btn btn-outline" style="width:100%;font-size:12px" onclick="viewFromCompare(${item.id})">→ ${t('cView')}</button></div>`;});h+=`</div>`;el.innerHTML=h;}
+
+function toggleHSN(){
+  const s=document.getElementById('hsnSection');
+  const a=document.getElementById('hsnArrow');
+  const open=s.style.display==='block';
+  s.style.display=open?'none':'block';
+  a.textContent=open?'▸':'▾';
+}
 function showToast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2700);}
 
 // ════ AUTO-FETCH CAR DATA ════
@@ -480,9 +485,7 @@ Language for option labels: ${langName}. Be specific to this exact generation/fa
   try {
     const res = await fetch('/api/analyse', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 500,
@@ -532,7 +535,7 @@ function setCarStatus(state) {
 }
 
 applyI18n();updateBadges();updateCreditsUI();loadFromHash();
+document.querySelectorAll('.nbadge').forEach(b=>{b.style.display='inline-flex';});
 </script>
 </body>
 </html>
-
