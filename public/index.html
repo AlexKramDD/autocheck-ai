@@ -349,6 +349,15 @@ en:{tagline:'Used Car Advisor',creditsLbl:'analyses',tabAnalyse:'Analysis',tabHi
 let lang='ru',apiKey='',apiVisible=true;
 let currentResult=null,currentFormData=null,currentDesc='';
 let credits=0,history=[],compareList=[];let activeTab='analyse';
+
+// Migrate old history key if exists
+try {
+  const _old = localStorage.getItem('ac_history');
+  if (_old && !localStorage.getItem('ac_hist')) {
+    localStorage.setItem('ac_hist', _old);
+    localStorage.removeItem('ac_history');
+  }
+} catch(e) {}
 try{history=JSON.parse(localStorage.getItem('ac_hist')||'[]');}catch(e){history=[];}
 try{compareList=JSON.parse(sessionStorage.getItem('ac_cmp')||'[]');}catch(e){compareList=[];}
 try{const s=localStorage.getItem('ac_credits');credits=s===null?2:parseInt(s,10)||0;if(s===null)localStorage.setItem('ac_credits','2');}catch(e){credits=3;}
@@ -360,7 +369,7 @@ function openModal(){document.getElementById('modal').classList.add('open');}
 function closeModal(){document.getElementById('modal').classList.remove('open');}
 function purchase(amt){credits+=amt;saveCredits();updateCreditsUI();closeModal();showToast(`⚡ ${amt} ${t('credAdded')}`);}
 
-function setLang(l){lang=l;document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('on'));document.querySelector(`.lbtn[onclick="setLang('${l}')"]`).classList.add('on');applyI18n();updateBadges();if(activeTab==='history')renderHistory();if(activeTab==='compare')renderCompare();if(currentResult&&currentFormData&&activeTab==='analyse')renderResults(currentResult,currentFormData);}
+function setLang(l){lang=l;document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('on'));document.querySelector(`.lbtn[onclick="setLang('${l}')"]`).classList.add('on');applyI18n();updateBadges();if(activeTab==='history')renderHistory();if(activeTab==='compare')renderCompare();if(currentResult&&currentFormData&&activeTab==='analyse')renderResults(currentResult,currentFormData);_lastFetched='';tryFetchCarData();}
 function applyI18n(){
   document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(el.tagName!=='INPUT'&&el.tagName!=='TEXTAREA')el.textContent=t(k);});
   document.querySelectorAll('[data-i18n-html]').forEach(el=>{el.innerHTML=t(el.getAttribute('data-i18n-html'));});
@@ -371,7 +380,7 @@ function applyI18n(){
 function saveKey(){const v=document.getElementById('apiInput').value.trim();if(!v.startsWith('sk-ant')){showToast('⚠ '+t('apiErr'));return;}apiKey=v;refreshApiStatus();}
 function refreshApiStatus(){const el=document.getElementById('apiStatus');if(apiKey){el.className='api-status ok';el.innerHTML=`<span>●</span><span>${t('apiSaved')}</span>`;}else{el.className='api-status no';el.innerHTML=`<span>○</span><span>${t('apiNotSet')}</span>`;}}
 function toggleApi(){apiVisible=!apiVisible;document.getElementById('apiBody').style.display=apiVisible?'':'none';document.getElementById('apiToggle').textContent=apiVisible?t('apiHide'):t('apiShow');}
-function showTab(tab){activeTab=tab;document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));document.getElementById('pane-'+tab).classList.add('on');document.getElementById('ntab-'+tab).classList.add('on');if(tab==='history')renderHistory();if(tab==='compare')renderCompare();}
+function showTab(tab){activeTab=tab;document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));document.getElementById('pane-'+tab).classList.add('on');document.getElementById('ntab-'+tab).classList.add('on');updateBadges();if(tab==='history')renderHistory();if(tab==='compare')renderCompare();}
 function updateBadges(){document.getElementById('hbadge').textContent=history.length;document.getElementById('cbadge').textContent=compareList.length;}
 function getForm(){return{make:document.getElementById('f-make').value.trim(),model:document.getElementById('f-model').value.trim(),year:document.getElementById('f-year').value.trim(),mileage:document.getElementById('f-mileage').value.trim(),body:document.getElementById('f-body').value,bodyTxt:document.getElementById('f-body').selectedOptions[0]?.textContent||'',engine:document.getElementById('f-engine').value,engineTxt:document.getElementById('f-engine').selectedOptions[0]?.textContent||'',trans:document.getElementById('f-trans').value,transTxt:document.getElementById('f-trans').selectedOptions[0]?.textContent||'',price:document.getElementById('f-price').value.trim(),notes:document.getElementById('f-notes').value.trim(),hsn:document.getElementById('f-hsn')?.value.trim()||'',tsn:document.getElementById('f-tsn')?.value.trim()||''};}
 function fillForm(d){['make','model','year','mileage','body','engine','trans','price','notes','hsn','tsn'].forEach(k=>{const el=document.getElementById('f-'+k);if(el&&d[k]!==undefined)el.value=d[k];});}
@@ -434,7 +443,7 @@ function doNew(){document.getElementById('results').innerHTML='';window.scrollTo
 function doShare(){const d=getForm();const enc=btoa(unescape(encodeURIComponent(JSON.stringify({make:d.make,model:d.model,year:d.year,mileage:d.mileage,body:d.body,engine:d.engine,trans:d.trans,price:d.price,notes:d.notes}))));const url=location.href.split('#')[0]+'#v='+enc;if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>showToast(t('toastCopy')));}else{prompt('Copy:',url);}}
 function loadFromHash(){const h=location.hash;if(!h.startsWith('#v='))return;try{const d=JSON.parse(decodeURIComponent(escape(atob(h.slice(3)))));fillForm(d);}catch(e){}}
 function pushHistory(desc,result,formData){const locale=lang==='de'?'de-DE':lang==='en'?'en-GB':'ru-RU';history.unshift({id:Date.now(),date:new Date().toLocaleString(locale,{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),desc,result,formData,lang});if(history.length>20)history.pop();try{localStorage.setItem('ac_hist',JSON.stringify(history));}catch(e){}}
-function renderHistory(){const el=document.getElementById('hlist');if(!history.length){el.innerHTML=`<div class="empty"><div class="empty-ic">📋</div><div class="empty-t">${t('hEmpty')}</div><div class="empty-s">${t('hEmptySub')}</div></div>`;return;}let h=`<div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn btn-danger" onclick="clearHistory()">${t('hClear')}</button></div>`;history.forEach(en=>{h+=`<div class="hentry" onclick="viewHistory(${en.id})"><div class="hentry-ic">🚗</div><div class="hentry-body"><div class="hentry-car">${en.desc}</div><div class="hentry-meta">${en.date} · <span class="badge ${RB[en.result?.riskLevel]||'b-amber'}" style="font-size:10px">${t('r'+cap(en.result?.riskLevel))}</span></div></div><div class="hentry-btns" onclick="event.stopPropagation()"><button class="btn btn-ghost" style="padding:6px 12px;font-size:11px" onclick="viewHistory(${en.id})">${t('hView')}</button><button class="btn btn-danger" style="padding:6px 12px;font-size:11px" onclick="delHistory(${en.id})">${t('hDel')}</button></div></div>`;});el.innerHTML=h;}
+function renderHistory(){updateBadges();const el=document.getElementById('hlist');if(!history.length){el.innerHTML=`<div class="empty"><div class="empty-ic">📋</div><div class="empty-t">${t('hEmpty')}</div><div class="empty-s">${t('hEmptySub')}</div></div>`;return;}let h=`<div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn btn-danger" onclick="clearHistory()">${t('hClear')}</button></div>`;history.forEach(en=>{h+=`<div class="hentry" onclick="viewHistory(${en.id})"><div class="hentry-ic">🚗</div><div class="hentry-body"><div class="hentry-car">${en.desc}</div><div class="hentry-meta">${en.date} · <span class="badge ${RB[en.result?.riskLevel]||'b-amber'}" style="font-size:10px">${t('r'+cap(en.result?.riskLevel))}</span></div></div><div class="hentry-btns" onclick="event.stopPropagation()"><button class="btn btn-ghost" style="padding:6px 12px;font-size:11px" onclick="viewHistory(${en.id})">${t('hView')}</button><button class="btn btn-danger" style="padding:6px 12px;font-size:11px" onclick="delHistory(${en.id})">${t('hDel')}</button></div></div>`;});el.innerHTML=h;}
 function viewHistory(id){const en=history.find(h=>h.id===id);if(!en)return;currentResult=en.result;currentDesc=en.desc;currentFormData=en.formData;if(en.formData)fillForm(en.formData);showTab('analyse');renderResults(en.result,en.formData||{});}
 function delHistory(id){history=history.filter(h=>h.id!==id);try{localStorage.setItem('ac_hist',JSON.stringify(history));}catch(e){}updateBadges();renderHistory();}
 function clearHistory(){history=[];try{localStorage.removeItem('ac_hist');}catch(e){}updateBadges();renderHistory();}
@@ -479,7 +488,7 @@ async function tryFetchCarData() {
   const prompt = `For the ${year} ${make} ${model} sold in Europe, list the main factory variants.
 Return ONLY valid JSON (no markdown):
 {"bodyTypes":["...up to 4 specific body types"],"engines":["e.g. 2.0 TDI 150hp Diesel","...up to 5"],"transmissions":["e.g. 6-speed Manual","7-speed DSG Automatic","...up to 4"]}
-Language for option labels: ${langName}. Be specific to this exact generation/facelift.`;
+ALL option labels MUST be in ${langName} language only. Be specific to this exact generation/facelift.`;
 
   try {
     const res = await fetch('/api/analyse', {
@@ -533,7 +542,7 @@ function setCarStatus(state) {
   }
 }
 
-applyI18n();updateBadges();updateCreditsUI();loadFromHash();
+applyI18n();updateBadges();updateCreditsUI();loadFromHash();setTimeout(updateBadges,300);
 document.querySelectorAll('.nbadge').forEach(b=>{b.style.display='inline-flex';});
 </script>
 </body>
