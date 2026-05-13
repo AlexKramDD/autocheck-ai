@@ -397,7 +397,7 @@ async function doAnalyse(){
   const btn=document.getElementById('analyseBtn');btn.disabled=true;
   document.getElementById('results').innerHTML=`<div class="loading"><div class="spin-ring"></div><div class="loading-t">${t('loadMsg')}</div><div class="loading-s">${t('loadSub')}</div></div>`;
   try{
-    const res=await fetch('/api/analyse',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:4000,messages:[{role:'user',content:buildPrompt(desc)}]})});
+    const res=await fetch('/api/analyse',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:4000,temperature:0,messages:[{role:'user',content:buildPrompt(desc)}]})});
     if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||res.statusText);}
     const data=await res.json();
     const raw=data.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
@@ -464,7 +464,7 @@ async function generatePDF(){
   const rBg=r.riskLevel==='low'?'#f0fdf4':r.riskLevel==='medium'?'#fffbeb':'#fff8f0';
 
   const el=document.createElement('div');
-  el.style.cssText='font-family:Arial,sans-serif;color:#1a1a1a;background:#fff;padding:24px 28px;max-width:780px;font-size:13px;line-height:1.6';
+  el.style.cssText='font-family:Arial,sans-serif;color:#1a1a1a;background:#fff;padding:24px 28px;max-width:780px;font-size:13px;line-height:1.6;box-sizing:border-box';
   el.innerHTML=`
     <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #F59E0B;padding-bottom:12px;margin-bottom:18px">
       <div><div style="font-size:22px;font-weight:900;color:#0D1B2E;letter-spacing:.02em">AutoCheck<span style="color:#F59E0B">AI</span></div>
@@ -472,24 +472,24 @@ async function generatePDF(){
       <div style="font-size:11px;color:#888;text-align:right">${dateStr}</div>
     </div>
     <h2 style="font-size:15px;font-weight:700;margin:0 0 6px;color:#0D1B2E">${currentDesc}</h2>
-    <div style="background:${rBg};border-left:4px solid ${rCol};padding:10px 14px;margin-bottom:16px;border-radius:4px">
+    <div style="background:${rBg};border-left:4px solid ${rCol};padding:10px 14px;margin-bottom:16px;border-radius:4px;page-break-inside:avoid">
       <strong>${t('sRisk')}:</strong> <span style="color:${rCol};font-weight:700">${t('r'+cap(r.riskLevel))}</span><br>
       <span style="color:#555">${r.riskSummary}</span>
     </div>
-    ${r.knownIssues?.length?`<h3 style="font-size:13px;font-weight:700;border-bottom:1px solid #eee;padding-bottom:5px;margin:0 0 10px;text-transform:uppercase;letter-spacing:.06em;color:#333">${t('sIssues')}</h3>
-    ${r.knownIssues.map(i=>`<div style="margin-bottom:10px;padding-left:10px;border-left:3px solid ${i.severity==='critical'?'#E07A00':i.severity==='warning'?'#D97706':'#16A34A'}">
+    ${r.knownIssues?.length?`<h3 style="page-break-after:avoid;font-size:13px;font-weight:700;border-bottom:1px solid #eee;padding-bottom:5px;margin:0 0 10px;text-transform:uppercase;letter-spacing:.06em;color:#333">${t('sIssues')}</h3>
+    ${r.knownIssues.map(i=>`<div style="page-break-inside:avoid;margin-bottom:10px;padding-left:10px;border-left:3px solid ${i.severity==='critical'?'#E07A00':i.severity==='warning'?'#D97706':'#16A34A'}">
       <strong>${i.title}</strong> <span style="font-size:10px;color:#888;text-transform:uppercase">[${t('sv'+cap(i.severity))}]</span><br>
       <span style="color:#555;font-size:12px">${i.detail}</span></div>`).join('')}`:''}
-    ${r.inspectionChecklist?.length?`<h3 style="font-size:13px;font-weight:700;border-bottom:1px solid #eee;padding-bottom:5px;margin:16px 0 10px;text-transform:uppercase;letter-spacing:.06em;color:#333">${t('sCheck')}</h3>
-    ${r.inspectionChecklist.map(cat=>`<div style="margin-bottom:8px"><strong style="font-size:11px;color:#666;text-transform:uppercase">${cat.category}</strong><br>${cat.items.map(item=>`<div style="padding-left:12px;font-size:12px;color:#444">• ${item}</div>`).join('')}</div>`).join('')}`:''}
-    ${r.questionsForSeller?.length?`<h3 style="font-size:13px;font-weight:700;border-bottom:1px solid #eee;padding-bottom:5px;margin:16px 0 10px;text-transform:uppercase;letter-spacing:.06em;color:#333">${t('sQs')}</h3>
+    ${r.inspectionChecklist?.length?`<h3 style="page-break-after:avoid;font-size:13px;font-weight:700;border-bottom:1px solid #eee;padding-bottom:5px;margin:16px 0 10px;text-transform:uppercase;letter-spacing:.06em;color:#333">${t('sCheck')}</h3>
+    ${r.inspectionChecklist.map(cat=>`<div style="page-break-inside:avoid;margin-bottom:8px"><strong style="font-size:11px;color:#666;text-transform:uppercase">${cat.category}</strong><br>${cat.items.map(item=>`<div style="padding-left:12px;font-size:12px;color:#444">• ${item}</div>`).join('')}</div>`).join('')}`:''}
+    ${r.questionsForSeller?.length?`<h3 style="page-break-after:avoid;font-size:13px;font-weight:700;border-bottom:1px solid #eee;padding-bottom:5px;margin:16px 0 10px;text-transform:uppercase;letter-spacing:.06em;color:#333">${t('sQs')}</h3>
     ${r.questionsForSeller.map((q,i)=>`<div style="margin-bottom:5px;font-size:12px">${String(i+1).padStart(2,'0')}. ${q}</div>`).join('')}`:''}
     ${r.redFlags?.length?`<h3 style="font-size:13px;font-weight:700;border-bottom:1px solid #fed7aa;padding-bottom:5px;margin:16px 0 10px;text-transform:uppercase;letter-spacing:.06em;color:#E07A00">${t('sFlags')}</h3>
-    ${r.redFlags.map(f=>`<div style="color:#c2410c;font-size:12px;margin-bottom:4px">⚠ ${f}</div>`).join('')}`:''}
-    ${r.priceFeedback?`<div style="background:#f8fafc;border:1px solid #e2e8f0;padding:10px 14px;margin-top:14px;border-radius:4px;font-size:12px">
+    ${r.redFlags.map(f=>`<div style="page-break-inside:avoid;color:#c2410c;font-size:12px;margin-bottom:4px">⚠ ${f}</div>`).join('')}`:''}
+    ${r.priceFeedback?`<div style="page-break-inside:avoid;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 14px;margin-top:14px;border-radius:4px;font-size:12px">
       <strong>${t('sPrice')}:</strong> ${t(r.priceFeedback.assessment==='fair'?'pFair':r.priceFeedback.assessment==='high'?'pHigh':'pLow')}<br>
       <span style="color:#555">${r.priceFeedback.comment}</span></div>`:''}
-    ${r.tip?`<div style="background:#eff6ff;border-left:4px solid #3B82F6;padding:10px 14px;margin-top:12px;border-radius:4px;font-size:12px">
+    ${r.tip?`<div style="page-break-inside:avoid;background:#eff6ff;border-left:4px solid #3B82F6;padding:10px 14px;margin-top:12px;border-radius:4px;font-size:12px">
       <strong>${t('sTip')}:</strong> ${r.tip}</div>`:''}
     <div style="margin-top:24px;padding-top:10px;border-top:1px solid #eee;color:#aaa;font-size:10px;text-align:center">
       AutoCheck AI — autocheck-ai-k818.onrender.com — ${t('riskAI')}
@@ -498,10 +498,11 @@ async function generatePDF(){
   document.body.appendChild(el);
   const fname='AutoCheck_'+currentDesc.replace(/[,\s]+/g,'_').slice(0,35)+'.pdf';
   await html2pdf().set({
-    margin:[12,12,12,12],filename:fname,
+    margin:[14,12,14,12],filename:fname,
     image:{type:'jpeg',quality:0.97},
-    html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff'},
-    jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}
+    html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff',scrollY:0,windowWidth:900},
+    jsPDF:{unit:'mm',format:'a4',orientation:'portrait',compress:true},
+    pagebreak:{mode:['css','legacy'],avoid:['div','p','h3','h2']}
   }).from(el).save();
   document.body.removeChild(el);
 }
@@ -576,6 +577,7 @@ ALL option labels MUST be in ${langName} language only. Be specific to this exac
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 500,
+        temperature: 0,
         messages: [{ role: 'user', content: prompt }]
       })
     });
