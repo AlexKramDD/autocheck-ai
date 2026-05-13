@@ -95,10 +95,6 @@ textarea{resize:vertical;min-height:62px}
 .risk-dot{width:20px;height:20px;border-radius:50%;background:var(--surf);border:3px solid;position:absolute;top:50%;transform:translate(-50%,-50%);box-shadow:0 0 10px currentColor}
 .risk-range-labels{display:flex;justify-content:space-between;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
 .b-orange{background:rgba(224,122,0,.12);color:#E07A00;border:1px solid rgba(224,122,0,.3)}
-/* HSN TSN */
-.hsn-toggle{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;cursor:pointer;display:flex;align-items:center;gap:6px;padding:10px 0 4px;border-top:1px solid var(--bd);margin-top:8px;transition:color .15s;user-select:none}
-.hsn-toggle:hover{color:var(--blue)}
-.hsn-section{display:none;padding-top:8px}
 
 /* RESULT SECTIONS */
 .rsec{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:18px 20px;margin-bottom:12px;backdrop-filter:blur(8px);animation:fadeUp .4s ease both}
@@ -277,21 +273,6 @@ textarea{resize:vertical;min-height:62px}
       <div class="fld"><label data-i18n="lNotes">Дополнительно</label><input type="text" id="f-notes" data-i18n-ph="phNotes" placeholder="один владелец, полное ТО у дилера…"/></div>
     </div>
 
-    <div class="hsn-toggle" onclick="toggleHSN()" id="hsnToggle">
-      <span id="hsnArrow">▸</span> <span data-i18n="hsnLabel">HSN / TSN — Fahrzeugschein (optional)</span>
-    </div>
-    <div class="hsn-section" id="hsnSection">
-      <div class="fg fg-n" style="margin-bottom:8px">
-        <div class="fld">
-          <label data-i18n="lHSN">HSN <span style="font-weight:400;text-transform:none">(4 Ziffern)</span></label>
-          <input type="text" id="f-hsn" placeholder="z.B. 0005" maxlength="4" oninput="scheduleCarFetch()" style="font-family:'JetBrains Mono',monospace"/>
-        </div>
-        <div class="fld">
-          <label data-i18n="lTSN">TSN <span style="font-weight:400;text-transform:none">(3 Zeichen)</span></label>
-          <input type="text" id="f-tsn" placeholder="z.B. AHF" maxlength="6" oninput="scheduleCarFetch()" style="font-family:'JetBrains Mono',monospace"/>
-        </div>
-      </div>
-    </div>
     <button class="btn btn-primary" id="analyseBtn" onclick="doAnalyse()">⚡ <span data-i18n="btnAnalyse">Запустить анализ</span></button>
   </div>
 
@@ -401,9 +382,9 @@ function refreshApiStatus(){const el=document.getElementById('apiStatus');if(api
 function toggleApi(){apiVisible=!apiVisible;document.getElementById('apiBody').style.display=apiVisible?'':'none';document.getElementById('apiToggle').textContent=apiVisible?t('apiHide'):t('apiShow');}
 function showTab(tab){activeTab=tab;document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));document.getElementById('pane-'+tab).classList.add('on');document.getElementById('ntab-'+tab).classList.add('on');updateBadges();if(tab==='history')renderHistory();if(tab==='compare')renderCompare();}
 function updateBadges(){document.getElementById('hbadge').textContent=history.length;document.getElementById('cbadge').textContent=compareList.length;}
-function getForm(){return{make:document.getElementById('f-make').value.trim(),model:document.getElementById('f-model').value.trim(),year:document.getElementById('f-year').value.trim(),mileage:document.getElementById('f-mileage').value.trim(),body:document.getElementById('f-body').value,bodyTxt:document.getElementById('f-body').selectedOptions[0]?.textContent||'',engine:document.getElementById('f-engine').value,engineTxt:document.getElementById('f-engine').selectedOptions[0]?.textContent||'',trans:document.getElementById('f-trans').value,transTxt:document.getElementById('f-trans').selectedOptions[0]?.textContent||'',price:document.getElementById('f-price').value.trim(),notes:document.getElementById('f-notes').value.trim(),hsn:document.getElementById('f-hsn')?.value.trim()||'',tsn:document.getElementById('f-tsn')?.value.trim()||''};}
-function fillForm(d){['make','model','year','mileage','body','engine','trans','price','notes','hsn','tsn'].forEach(k=>{const el=document.getElementById('f-'+k);if(el&&d[k]!==undefined)el.value=d[k];});}
-function buildDesc(d){const sep=lang==='de'?['Bj.','Tsd.km','Preis']:lang==='en'?['','k km','price']:['г.','тыс.км','цена'];return[d.make,d.model,d.year?`${sep[0]} ${d.year}`.trim():'',d.mileage?`${d.mileage} ${sep[1]}`:'',d.bodyTxt,d.engineTxt,d.transTxt,d.price?`${sep[2]} ${d.price} €`:'',d.notes,d.hsn?`HSN:${d.hsn}`:'',d.tsn?`TSN:${d.tsn}`:''].filter(Boolean).join(', ');}
+function getForm(){return{make:document.getElementById('f-make').value.trim(),model:document.getElementById('f-model').value.trim(),year:document.getElementById('f-year').value.trim(),mileage:document.getElementById('f-mileage').value.trim(),body:document.getElementById('f-body').value,bodyTxt:document.getElementById('f-body').selectedOptions[0]?.textContent||'',engine:document.getElementById('f-engine').value,engineTxt:document.getElementById('f-engine').selectedOptions[0]?.textContent||'',trans:document.getElementById('f-trans').value,transTxt:document.getElementById('f-trans').selectedOptions[0]?.textContent||'',price:document.getElementById('f-price').value.trim(),notes:document.getElementById('f-notes').value.trim()};}
+function fillForm(d){['make','model','year','mileage','body','engine','trans','price','notes'].forEach(k=>{const el=document.getElementById('f-'+k);if(el&&d[k]!==undefined)el.value=d[k];});}
+function buildDesc(d){const sep=lang==='de'?['Bj.','Tsd.km','Preis']:lang==='en'?['','k km','price']:['г.','тыс.км','цена'];return[d.make,d.model,d.year?`${sep[0]} ${d.year}`.trim():'',d.mileage?`${d.mileage} ${sep[1]}`:'',d.bodyTxt,d.engineTxt,d.transTxt,d.price?`${sep[2]} ${d.price} €`:'',d.notes].filter(Boolean).join(', ');}
 function buildPrompt(desc){const role={ru:'Ты — эксперт по покупке подержанных автомобилей с опытом в авторемонтных мастерских и знанием форумов владельцев.',de:'Du bist Experte für Gebrauchtwagenkauf mit Werkstatterfahrung.',en:'You are a used-car expert with workshop experience and knowledge of owner forums.'};const cmd={ru:`Строго по-русски. Авто: ${desc}`,de:`Nur Deutsch. Fahrzeug: ${desc}`,en:`English only. Vehicle: ${desc}`};return `${role[lang]}\n\n${cmd[lang]}\n\nReturn ONLY valid JSON, no markdown:\n{"riskLevel":"low"|"medium"|"high","riskSummary":"2 sentences","knownIssues":[{"severity":"critical"|"warning"|"ok","title":"short","detail":"1-2 sentences"}],"inspectionChecklist":[{"category":"name","items":["item"]}],"questionsForSeller":["q1","q2","q3","q4","q5","q6"],"priceFeedback":{"assessment":"fair"|"high"|"low","comment":"1 sentence"},"redFlags":["f1","f2","f3"],"tip":"1 key sentence"}\n\nCRITICAL: First verify that the make+model is a real production car. If not real or clearly misspelled, return ONLY: {"valid":false}
 If valid, return full JSON with "valid":true as first field.
 Give 5 knownIssues, 4 checklist categories (3 items each), 6 questions, 3 red flags.
@@ -472,14 +453,6 @@ function removeCompare(id){compareList=compareList.filter(c=>c.id!==id);try{sess
 function clearCompare(){compareList=[];try{sessionStorage.removeItem('ac_cmp');}catch(e){}updateBadges();renderCompare();}
 function viewFromCompare(id){const item=compareList.find(c=>c.id===id);if(!item)return;currentResult=item.result;currentDesc=item.desc;currentFormData=item.formData;if(item.formData)fillForm(item.formData);showTab('analyse');renderResults(item.result,item.formData||{});}
 function renderCompare(){const el=document.getElementById('clist');if(!compareList.length){el.innerHTML=`<div class="empty"><div class="empty-ic">⚖️</div><div class="empty-t">${t('cEmpty')}</div><div class="empty-s">${t('cEmptySub')}</div></div>`;return;}let h=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:.06em">${t('cTitle')}</div><button class="btn btn-danger" onclick="clearCompare()">${t('cClear')}</button></div><div class="cmp-grid" style="grid-template-columns:repeat(${compareList.length},1fr)">`;compareList.forEach(item=>{const r=item.result;const critCount=r.knownIssues?.filter(i=>i.severity==='critical').length||0;const pa=r.priceFeedback;h+=`<div class="cmp-card"><div class="cmp-name"><span>${item.desc}</span><button class="btn btn-ghost" style="padding:3px 8px;font-size:11px;flex-shrink:0" onclick="removeCompare(${item.id})">✕</button></div><div style="margin-bottom:12px"><div class="cmp-lbl">${t('cRisk')}</div><span class="badge ${RB[r.riskLevel]||'b-amber'}">${t('r'+cap(r.riskLevel))}</span></div><div style="margin-bottom:12px"><div class="cmp-lbl">${t('cIssues')}</div><div class="cmp-stat" style="color:${critCount?'var(--red)':'var(--text)'}">${r.knownIssues?.length||0}</div><div style="font-size:11px;color:var(--text2);margin-top:2px">${critCount} critical</div></div>${pa?`<div style="margin-bottom:12px"><div class="cmp-lbl">${t('cPrice')}</div><span class="badge ${PB[pa.assessment]||'b-amber'}">${t(PK[pa.assessment]||'pFair')}</span></div>`:''}<div style="margin-bottom:14px"><div class="cmp-lbl">${t('cQs')}</div><div class="cmp-stat" style="color:var(--amber)">${r.questionsForSeller?.length||0}</div></div><button class="btn btn-outline" style="width:100%;font-size:12px" onclick="viewFromCompare(${item.id})">→ ${t('cView')}</button></div>`;});h+=`</div>`;el.innerHTML=h;}
-
-function toggleHSN(){
-  const s=document.getElementById('hsnSection');
-  const a=document.getElementById('hsnArrow');
-  const open=s.style.display==='block';
-  s.style.display=open?'none':'block';
-  a.textContent=open?'▸':'▾';
-}
 
 // ════ PDF GENERATION ════
 async function generatePDF(){
@@ -581,26 +554,17 @@ async function tryFetchCarData() {
   const make  = document.getElementById('f-make').value.trim();
   const model = document.getElementById('f-model').value.trim();
   const year  = document.getElementById('f-year').value.trim();
-  const hsn   = document.getElementById('f-hsn')?.value.trim() || '';
-  const tsn   = document.getElementById('f-tsn')?.value.trim() || '';
-  if (year.length !== 4) return;
+  if (!make || !model || year.length !== 4) return;
   const y = parseInt(year);
   if (y < 1985 || y > 2026) return;
-
-  // HSN+TSN path: identify car from German Fahrzeugschein
-  const useHSN = hsn.length === 4 && tsn.length >= 3 && !make && !model;
-  if (!useHSN && (!make || !model)) return;
-
-  const key = useHSN ? `HSN:${hsn}/${tsn}|${year}` : `${make}|${model}|${year}`;
+  const key = `${make}|${model}|${year}`;
   if (key === _lastFetched) return;
   _lastFetched = key;
 
   setCarStatus('loading');
 
   const langName = {ru:'Russian',de:'German',en:'English'}[lang]||'English';
-  const prompt = useHSN
-    ? `Identify the German vehicle by HSN ${hsn} and TSN ${tsn} from ${year}. Return ONLY valid JSON: {"make":"manufacturer","model":"model name","bodyTypes":["specific body"],"engines":["e.g. 2.0 TDI 150hp Diesel"],"transmissions":["e.g. 6-speed Manual"]}. ALL labels in ${langName}. Max 4 options per category.`
-    : `For the ${year} ${make} ${model} sold in Europe, list the main factory variants.
+  const prompt = `For the ${year} ${make} ${model} sold in Europe, list the main factory variants.
 Return ONLY valid JSON (no markdown):
 {"bodyTypes":["...up to 4 specific body types"],"engines":["e.g. 2.0 TDI 150hp Diesel","...up to 5"],"transmissions":["e.g. 6-speed Manual","7-speed DSG Automatic","...up to 4"]}
 ALL option labels MUST be in ${langName} language only. Be specific to this exact generation/facelift.`;
@@ -619,8 +583,6 @@ ALL option labels MUST be in ${langName} language only. Be specific to this exac
     const data = await res.json();
     const raw = data.content.map(i => i.text || '').join('').replace(/```json|```/g, '').trim();
     const d = JSON.parse(raw);
-    if (d.make && !document.getElementById('f-make').value.trim())   document.getElementById('f-make').value = d.make;
-    if (d.model && !document.getElementById('f-model').value.trim()) document.getElementById('f-model').value = d.model;
     if (d.bodyTypes?.length)    fillSelect('f-body',   d.bodyTypes);
     if (d.engines?.length)      fillSelect('f-engine', d.engines);
     if (d.transmissions?.length) fillSelect('f-trans', d.transmissions);
