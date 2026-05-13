@@ -204,7 +204,6 @@ textarea{resize:vertical;min-height:62px}
 @media(max-width:600px){.hdr-inner{padding:0 14px;height:54px}.logo-sub{display:none}.wrap{padding:14px 12px 36px}.card{padding:16px}.fg-n{grid-template-columns:1fr}.pkg-grid{grid-template-columns:1fr}}
 @media print{.hdr,.nav,.api-card,.card,.act-bar,.modal-overlay{display:none!important}.wrap{padding:0;max-width:100%}.rsec{box-shadow:none!important;break-inside:avoid}body{background:#fff;color:#000}}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 
@@ -225,7 +224,7 @@ textarea{resize:vertical;min-height:62px}
     <div class="hdr-right">
       <div class="credits-badge" id="creditsBadge" onclick="openModal()" data-i18n-title="buyTip">
         <span>⚡</span>
-        <span class="credits-num" id="creditsNum">3</span>
+        <span class="credits-num" id="creditsNum">2</span>
         <span class="credits-lbl" data-i18n="creditsLbl">анализов</span>
       </div>
       <div class="lang-sw">
@@ -374,7 +373,11 @@ try {
 } catch(e) {}
 try{history=JSON.parse(localStorage.getItem('ac_hist')||'[]');}catch(e){history=[];}
 try{compareList=JSON.parse(sessionStorage.getItem('ac_cmp')||'[]');}catch(e){compareList=[];}
-try{const s=localStorage.getItem('ac_cr2');credits=s===null?2:parseInt(s,10)||0;if(s===null)localStorage.setItem('ac_cr2','2');}catch(e){credits=2;}
+try{
+  const s=localStorage.getItem('ac_cr2');
+  if(s===null){credits=2;localStorage.setItem('ac_cr2','2');}
+  else{const v=parseInt(s,10);credits=isNaN(v)?2:v;}
+}catch(e){credits=2;}
 
 function t(k){return(I[lang]||I.ru)[k]||k;}
 function saveCredits(){try{localStorage.setItem('ac_cr2',String(credits));}catch(e){}}
@@ -472,7 +475,7 @@ function viewFromCompare(id){const item=compareList.find(c=>c.id===id);if(!item)
 function renderCompare(){const el=document.getElementById('clist');if(!compareList.length){el.innerHTML=`<div class="empty"><div class="empty-ic">⚖️</div><div class="empty-t">${t('cEmpty')}</div><div class="empty-s">${t('cEmptySub')}</div></div>`;return;}let h=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:.06em">${t('cTitle')}</div><button class="btn btn-danger" onclick="clearCompare()">${t('cClear')}</button></div><div class="cmp-grid" style="grid-template-columns:repeat(${compareList.length},1fr)">`;compareList.forEach(item=>{const r=item.result;const critCount=r.knownIssues?.filter(i=>i.severity==='critical').length||0;const pa=r.priceFeedback;h+=`<div class="cmp-card"><div class="cmp-name"><span>${item.desc}</span><button class="btn btn-ghost" style="padding:3px 8px;font-size:11px;flex-shrink:0" onclick="removeCompare(${item.id})">✕</button></div><div style="margin-bottom:12px"><div class="cmp-lbl">${t('cRisk')}</div><span class="badge ${RB[r.riskLevel]||'b-amber'}">${t('r'+cap(r.riskLevel))}</span></div><div style="margin-bottom:12px"><div class="cmp-lbl">${t('cIssues')}</div><div class="cmp-stat" style="color:${critCount?'var(--red)':'var(--text)'}">${r.knownIssues?.length||0}</div><div style="font-size:11px;color:var(--text2);margin-top:2px">${critCount} critical</div></div>${pa?`<div style="margin-bottom:12px"><div class="cmp-lbl">${t('cPrice')}</div><span class="badge ${PB[pa.assessment]||'b-amber'}">${t(PK[pa.assessment]||'pFair')}</span></div>`:''}<div style="margin-bottom:14px"><div class="cmp-lbl">${t('cQs')}</div><div class="cmp-stat" style="color:var(--amber)">${r.questionsForSeller?.length||0}</div></div><button class="btn btn-outline" style="width:100%;font-size:12px" onclick="viewFromCompare(${item.id})">→ ${t('cView')}</button></div>`;});h+=`</div>`;el.innerHTML=h;}
 
 // ════ PDF GENERATION ════
-async function generatePDF(){
+function generatePDF(){
   const r=currentResult;if(!r)return;
   showToast(t('toastPDFStart'));
   const locale=lang==='de'?'de-DE':lang==='en'?'en-GB':'ru-RU';
@@ -480,48 +483,87 @@ async function generatePDF(){
   const rCol=r.riskLevel==='low'?'#16A34A':r.riskLevel==='medium'?'#D97706':'#E07A00';
   const rBg=r.riskLevel==='low'?'#f0fdf4':r.riskLevel==='medium'?'#fffbeb':'#fff8f0';
 
-  const el=document.createElement('div');
-  el.style.cssText='font-family:Arial,sans-serif;color:#1a1a1a;background:#fff;padding:24px 28px;max-width:780px;font-size:13px;line-height:1.6;box-sizing:border-box';
-  el.innerHTML=`
-    <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #F59E0B;padding-bottom:12px;margin-bottom:18px">
-      <div><div style="font-size:22px;font-weight:900;color:#0D1B2E;letter-spacing:.02em">AutoCheck<span style="color:#F59E0B">AI</span></div>
-      <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.1em">${t('tagline')}</div></div>
-      <div style="font-size:11px;color:#888;text-align:right">${dateStr}</div>
-    </div>
-    <h2 style="font-size:15px;font-weight:700;margin:0 0 6px;color:#0D1B2E">${currentDesc}</h2>
-    <div style="background:${rBg};border-left:4px solid ${rCol};padding:10px 14px;margin-bottom:16px;border-radius:4px;page-break-inside:avoid">
-      <strong>${t('sRisk')}:</strong> <span style="color:${rCol};font-weight:700">${t('r'+cap(r.riskLevel))}</span><br>
-      <span style="color:#555">${r.riskSummary}</span>
-    </div>
-    ${r.knownIssues?.length?`<h3 style="page-break-after:avoid;font-size:13px;font-weight:700;border-bottom:1px solid #eee;padding-bottom:5px;margin:0 0 10px;text-transform:uppercase;letter-spacing:.06em;color:#333">${t('sIssues')}</h3>
-    ${r.knownIssues.map(i=>`<div style="page-break-inside:avoid;margin-bottom:10px;padding-left:10px;border-left:3px solid ${i.severity==='critical'?'#E07A00':i.severity==='warning'?'#D97706':'#16A34A'}">
-      <strong>${i.title}</strong> <span style="font-size:10px;color:#888;text-transform:uppercase">[${t('sv'+cap(i.severity))}]</span><br>
-      <span style="color:#555;font-size:12px">${i.detail}</span></div>`).join('')}`:''}
-    ${r.inspectionChecklist?.length?`<h3 style="page-break-after:avoid;font-size:13px;font-weight:700;border-bottom:1px solid #eee;padding-bottom:5px;margin:16px 0 10px;text-transform:uppercase;letter-spacing:.06em;color:#333">${t('sCheck')}</h3>
-    ${r.inspectionChecklist.map(cat=>`<div style="page-break-inside:avoid;margin-bottom:8px"><strong style="font-size:11px;color:#666;text-transform:uppercase">${cat.category}</strong><br>${cat.items.map(item=>`<div style="padding-left:12px;font-size:12px;color:#444">• ${item}</div>`).join('')}</div>`).join('')}`:''}
-    ${r.questionsForSeller?.length?`<h3 style="page-break-after:avoid;font-size:13px;font-weight:700;border-bottom:1px solid #eee;padding-bottom:5px;margin:16px 0 10px;text-transform:uppercase;letter-spacing:.06em;color:#333">${t('sQs')}</h3>
-    ${r.questionsForSeller.map((q,i)=>`<div style="margin-bottom:5px;font-size:12px">${String(i+1).padStart(2,'0')}. ${q}</div>`).join('')}`:''}
-    ${r.redFlags?.length?`<h3 style="font-size:13px;font-weight:700;border-bottom:1px solid #fed7aa;padding-bottom:5px;margin:16px 0 10px;text-transform:uppercase;letter-spacing:.06em;color:#E07A00">${t('sFlags')}</h3>
-    ${r.redFlags.map(f=>`<div style="page-break-inside:avoid;color:#c2410c;font-size:12px;margin-bottom:4px">⚠ ${f}</div>`).join('')}`:''}
-    ${r.priceFeedback?`<div style="page-break-inside:avoid;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 14px;margin-top:14px;border-radius:4px;font-size:12px">
-      <strong>${t('sPrice')}:</strong> ${t(r.priceFeedback.assessment==='fair'?'pFair':r.priceFeedback.assessment==='high'?'pHigh':'pLow')}<br>
-      <span style="color:#555">${r.priceFeedback.comment}</span></div>`:''}
-    ${r.tip?`<div style="page-break-inside:avoid;background:#eff6ff;border-left:4px solid #3B82F6;padding:10px 14px;margin-top:12px;border-radius:4px;font-size:12px">
-      <strong>${t('sTip')}:</strong> ${r.tip}</div>`:''}
-    <div style="margin-top:24px;padding-top:10px;border-top:1px solid #eee;color:#aaa;font-size:10px;text-align:center">
-      AutoCheck AI — autocheck-ai-k818.onrender.com — ${t('riskAI')}
-    </div>`;
+  const sections=[];
 
-  document.body.appendChild(el);
-  const fname='AutoCheck_'+currentDesc.replace(/[,\s]+/g,'_').slice(0,35)+'.pdf';
-  await html2pdf().set({
-    margin:[14,12,14,12],filename:fname,
-    image:{type:'jpeg',quality:0.97},
-    html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff',scrollY:0,windowWidth:900},
-    jsPDF:{unit:'mm',format:'a4',orientation:'portrait',compress:true},
-    pagebreak:{mode:['css','legacy'],avoid:['div','p','h3','h2']}
-  }).from(el).save();
-  document.body.removeChild(el);
+  if(r.knownIssues?.length){
+    const sev={critical:{c:'#E07A00',bg:'#fff8f0',lbl:t('svCrit')},warning:{c:'#D97706',bg:'#fffbeb',lbl:t('svWarn')},ok:{c:'#16A34A',bg:'#f0fdf4',lbl:t('svOk')}};
+    let s=`<div class="section"><div class="sec-title">${t('sIssues')}</div>`;
+    r.knownIssues.forEach(i=>{const sv=sev[i.severity]||sev.warning;s+=`<div class="issue" style="border-color:${sv.c};background:${sv.bg}"><div class="issue-title">${i.title} <span class="badge" style="background:${sv.c};color:#fff">${sv.lbl}</span></div><div class="issue-detail">${i.detail}</div></div>`;});
+    s+=`</div>`;sections.push(s);
+  }
+
+  if(r.inspectionChecklist?.length){
+    let s=`<div class="section"><div class="sec-title">${t('sCheck')}</div>`;
+    r.inspectionChecklist.forEach(cat=>{s+=`<div class="check-cat">${cat.category}</div>`;cat.items.forEach(item=>{s+=`<div class="check-item">${item}</div>`;});});
+    s+=`</div>`;sections.push(s);
+  }
+
+  if(r.questionsForSeller?.length){
+    let s=`<div class="section"><div class="sec-title">${t('sQs')}</div>`;
+    r.questionsForSeller.forEach((q,i)=>{s+=`<div class="q-item"><span class="q-num">${String(i+1).padStart(2,'0')}.</span>${q}</div>`;});
+    s+=`</div>`;sections.push(s);
+  }
+
+  if(r.redFlags?.length){
+    let s=`<div class="section" style="background:#fff8f0;padding:10px 14px;border-radius:6px;border-left:4px solid #E07A00"><div class="sec-title" style="color:#c2410c">${t('sFlags')}</div>`;
+    r.redFlags.forEach(f=>{s+=`<div style="color:#c2410c;font-size:13px;padding:3px 0">⚠ ${f}</div>`;});
+    s+=`</div>`;sections.push(s);
+  }
+
+  if(r.priceFeedback){
+    const pa=r.priceFeedback;const pk=pa.assessment==='fair'?'pFair':pa.assessment==='high'?'pHigh':'pLow';
+    sections.push(`<div class="section" style="background:#f8fafc;padding:10px 14px;border-radius:6px;border:1px solid #e2e8f0"><div class="sec-title">${t('sPrice')}</div><div style="font-weight:700">${t(pk)}</div><div style="color:#555;font-size:13px">${pa.comment}</div></div>`);
+  }
+
+  if(r.tip){
+    sections.push(`<div class="section" style="background:#eff6ff;padding:10px 14px;border-radius:6px;border-left:4px solid #3B82F6"><div class="sec-title" style="color:#1e40af">${t('sTip')}</div><div style="color:#1e3a8a;font-size:13px">${r.tip}</div></div>`);
+  }
+
+  const html=`<!DOCTYPE html><html lang="${lang}"><head><meta charset="UTF-8">
+<title>AutoCheck AI — ${currentDesc.replace(/</g,'&lt;')}</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;color:#1a1a1a;background:#fff;font-size:13px;line-height:1.6;padding:0}
+.page{max-width:760px;margin:0 auto;padding:24px 28px}
+.header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:3px solid #F59E0B;padding-bottom:12px;margin-bottom:18px}
+.brand{font-size:22px;font-weight:900;color:#0D1B2E}.brand span{color:#F59E0B}
+.tagline{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+.car-title{font-size:15px;font-weight:700;margin-bottom:14px}
+.risk-box{padding:10px 14px;border-left:4px solid;border-radius:4px;margin-bottom:18px;page-break-inside:avoid}
+.risk-label{font-size:16px;font-weight:800}.risk-summary{color:#555;font-size:13px;margin-top:4px}
+.section{margin-bottom:16px;page-break-inside:avoid}
+.sec-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#555;border-bottom:1px solid #eee;padding-bottom:5px;margin-bottom:10px;page-break-after:avoid}
+.issue{padding:8px 10px 8px 12px;border-left:3px solid;border-radius:2px;margin-bottom:8px;page-break-inside:avoid}
+.issue-title{font-weight:600;font-size:13px}.badge{font-size:10px;padding:1px 6px;border-radius:3px;margin-left:5px;vertical-align:middle}
+.issue-detail{font-size:12px;color:#555;margin-top:3px}
+.check-cat{font-size:10px;font-weight:700;text-transform:uppercase;color:#888;margin:10px 0 3px;page-break-after:avoid}
+.check-item{font-size:12px;color:#444;padding:2px 0 2px 12px;position:relative}
+.check-item::before{content:"•";position:absolute;left:0;color:#aaa}
+.q-item{font-size:12px;padding:5px 0;border-bottom:1px solid #f0f0f0}
+.q-num{font-weight:700;color:#F59E0B;margin-right:6px}
+.footer{margin-top:24px;padding-top:10px;border-top:1px solid #eee;color:#aaa;font-size:10px;text-align:center}
+@page{margin:15mm 12mm}
+@media print{.page{padding:0;max-width:100%}body{font-size:12px}}
+</style></head><body><div class="page">
+<div class="header">
+  <div><div class="brand">AutoCheck<span>AI</span></div><div class="tagline">${t('tagline')}</div></div>
+  <div style="font-size:11px;color:#888;text-align:right">${dateStr}</div>
+</div>
+<div class="car-title">${currentDesc.replace(/</g,'&lt;')}</div>
+<div class="risk-box" style="border-color:${rCol};background:${rBg}">
+  <div class="risk-label" style="color:${rCol}">${t('r'+cap(r.riskLevel))}</div>
+  <div class="risk-summary">${r.riskSummary}</div>
+</div>
+${sections.join('')}
+<div class="footer">AutoCheck AI · ${window.location.hostname||'autocheck-ai'} · ${t('riskAI')}</div>
+</div></body></html>`;
+
+  const w=window.open('','_blank','width=900,height=700');
+  if(!w){showToast('⚠ Pop-up blockiert — bitte erlauben');return;}
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  setTimeout(()=>w.print(),500);
 }
 
 // ════ EMAIL ════
