@@ -5,6 +5,29 @@ const path       = require('path');
 
 const app = express();
 app.set('trust proxy', 1);
+
+// ── Basic Auth (временная защита до публикации) ───────────────────
+const BASIC_USER = process.env.BASIC_USER;
+const BASIC_PASS = process.env.BASIC_PASS;
+
+function basicAuth(req, res, next) {
+  // Если переменные не заданы — защита отключена
+  if (!BASIC_USER || !BASIC_PASS) return next();
+
+  const auth = req.headers['authorization'];
+  if (!auth || !auth.startsWith('Basic ')) {
+    res.set('WWW-Authenticate', 'Basic realm="AutoCheck AI"');
+    return res.status(401).send('Zugang nur für Tester — bitte Passwort eingeben.');
+  }
+
+  const [user, pass] = Buffer.from(auth.slice(6), 'base64').toString().split(':');
+  if (user === BASIC_USER && pass === BASIC_PASS) return next();
+
+  res.set('WWW-Authenticate', 'Basic realm="AutoCheck AI"');
+  return res.status(401).send('Falsches Passwort.');
+}
+
+app.use(basicAuth);
 app.use(express.json({ limit: '2mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
