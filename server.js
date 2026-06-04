@@ -1,23 +1,27 @@
-const express = require('express');
-const path = require('path');
+
+const express    = require('express');
+const rateLimit  = require('express-rate-limit');
+const path       = require('path');
 
 const app = express();
+app.set('trust proxy', 1);
 app.use(express.json({ limit: '2mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-const API_KEY        = process.env.ANTHROPIC_API_KEY;
-const UPSTASH_URL    = process.env.UPSTASH_REDIS_REST_URL;
-const UPSTASH_TOKEN  = process.env.UPSTASH_REDIS_REST_TOKEN;
-const CACHE_TTL_SEC  = 24 * 60 * 60;
+const API_KEY             = process.env.ANTHROPIC_API_KEY;
+const UPSTASH_URL         = process.env.UPSTASH_REDIS_REST_URL;
+const UPSTASH_TOKEN       = process.env.UPSTASH_REDIS_REST_TOKEN;
+const TURNSTILE_SITE_KEY  = process.env.TURNSTILE_SITE_KEY;
+const TURNSTILE_SECRET    = process.env.TURNSTILE_SECRET_KEY;
+const CACHE_TTL_SEC       = 24 * 60 * 60;
 
-// In-memory fallback
+// ── Cache ─────────────────────────────────────────────────────────
 const memCache = new Map();
 setInterval(() => {
   const exp = Date.now() - CACHE_TTL_SEC * 1000;
   for (const [k,v] of memCache.entries()) if (v.ts < exp) memCache.delete(k);
 }, 60 * 60 * 1000);
 
-// Upstash REST
 async function redisCmd(...args) {
   if (!UPSTASH_URL || !UPSTASH_TOKEN) return null;
   try {
@@ -56,15 +60,76 @@ function getCacheKey(body) {
   return 'ac:' + m[1].trim().toLowerCase().replace(/\s+/g,'_').slice(0,80);
 }
 
-app.post('/api/analyse', async (req, res) => {
-  if (!API_KEY) return res.status(500).json({ error:{ message:'ANTHROPIC_API_KEY not set.' }});
+// ── Turnstile verification ────────────────────────────────────────
+async function verifyTurnstile(token, ip) {
+  if (!TURNSTILE_SECRET) return true; // not configured = skip
+  if (!token) return false;
+  try {
+    const form = new URLSearchParams();
+    form.append('secret', TURNSTILE_SECRET);
+    form.append('response', token);
+    if (ip) form.append('remoteip', ip);
+    const r = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: form
+    });
+    const data = await r.json();
+    return data.success === true;
+  } catch { return true; } // on network error — allow through
+}
 
+// ── Rate limiters ─────────────────────────────────────────────────
+const generalLimiter = rateLimit({
+  windowMs: 60 * 1000, max: 60,
+  standardHeaders: true, legacyHeaders: false,
+  message: { error: { message: 'Too many requests — please wait a minute.' } }
+});
+const analysisLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, max: 8,
+  standardHeaders: true, legacyHeaders: false,
+  message: { error: { message: 'Rate limit reached — please wait 15 minutes.' } }
+});
+const dailyLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, max: 30,
+  standardHeaders: true, legacyHeaders: false,
+  message: { error: { message: 'Daily limit reached for this IP. Try again tomorrow.' } }
+});
+
+app.use(generalLimiter);
+
+// ── Bot detection ─────────────────────────────────────────────────
+function botGuard(req, res, next) {
+  const ua = req.headers['user-agent'] || '';
+  if (/^(curl|python-requests|go-http|wget|scrapy|libwww)/i.test(ua))
+    return res.status(403).json({ error: { message: 'Automated requests not allowed.' } });
+  if (!req.body?.model || !req.body?.messages)
+    return res.status(400).json({ error: { message: 'Invalid request.' } });
+  next();
+}
+
+// ── Config endpoint (exposes public keys to frontend) ─────────────
+app.get('/api/config', (req, res) => {
+  res.json({ turnstileSiteKey: TURNSTILE_SITE_KEY || null });
+});
+
+// ── Main analysis endpoint ────────────────────────────────────────
+app.post('/api/analyse', dailyLimiter, analysisLimiter, botGuard, async (req, res) => {
+  if (!API_KEY) return res.status(500).json({ error: { message: 'Server not configured.' }});
+
+  // Turnstile verification
+  const tsToken = req.headers['x-turnstile-token'];
+  const tsValid = await verifyTurnstile(tsToken, req.ip);
+  if (!tsValid) {
+    return res.status(403).json({ error: { message: 'Bot check failed. Please refresh and try again.' }});
+  }
+
+  // Cache check
   const key = getCacheKey(req.body);
   if (key) {
     const cached = await cacheGet(key);
     if (cached) {
-      console.log(`HIT  [${UPSTASH_URL?'Redis':'Mem'}] ${key}`);
-      res.setHeader('X-Cache','HIT');
+      res.setHeader('X-Cache', 'HIT');
       return res.json(cached);
     }
   }
@@ -79,31 +144,32 @@ app.post('/api/analyse', async (req, res) => {
       headers['anthropic-beta'] = 'web-search-2025-03-05';
 
     const upstream = await fetch('https://api.anthropic.com/v1/messages',
-      { method:'POST', headers, body: JSON.stringify(req.body) });
+      { method: 'POST', headers, body: JSON.stringify(req.body) });
     const data = await upstream.json();
 
     if (upstream.ok && key && data.content) {
       await cacheSet(key, data);
-      console.log(`MISS [${UPSTASH_URL?'Redis':'Mem'}] ${key}`);
-      res.setHeader('X-Cache','MISS');
+      res.setHeader('X-Cache', 'MISS');
     }
 
     res.status(upstream.status).json(data);
   } catch(e) {
-    res.status(500).json({ error:{ message: e.message }});
+    res.status(500).json({ error: { message: e.message }});
   }
 });
 
-app.get('/api/cache-stats', (req, res) => res.json({
-  backend: UPSTASH_URL ? 'Redis (Upstash)' : 'Memory only',
-  memEntries: memCache.size
-}));
+// ── Stats ─────────────────────────────────────────────────────────
+app.get('/api/cache-stats', (req, res) => {
+  if (req.query.key !== process.env.STATS_KEY) return res.status(403).end();
+  res.json({ backend: UPSTASH_URL ? 'Redis' : 'Memory', memEntries: memCache.size });
+});
 
 app.get('*', (req, res) =>
-  res.sendFile(path.join(__dirname,'public','index.html')));
+  res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`AutoCheck AI — port ${PORT}`);
-  console.log(`Cache: ${UPSTASH_URL ? 'Redis (Upstash)' : 'Memory only'}`);
+  console.log(`Cache:     ${UPSTASH_URL ? 'Redis (Upstash)' : 'Memory only'}`);
+  console.log(`Turnstile: ${TURNSTILE_SECRET ? 'Enabled' : 'Disabled (set TURNSTILE_SECRET_KEY)'}`);
 });
