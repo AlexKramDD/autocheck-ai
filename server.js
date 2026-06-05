@@ -5,29 +5,6 @@ const path       = require('path');
 
 const app = express();
 app.set('trust proxy', 1);
-
-// ── Basic Auth — must come BEFORE static files ────────────────────
-const BASIC_USER = process.env.BASIC_USER;
-const BASIC_PASS = process.env.BASIC_PASS;
-
-function basicAuth(req, res, next) {
-  if (!BASIC_USER || !BASIC_PASS) return next();
-  const auth = req.headers['authorization'];
-  if (!auth || !auth.startsWith('Basic ')) {
-    res.set('WWW-Authenticate', 'Basic realm="AutoCheck AI - Tester Access"');
-    return res.status(401).type('html').send('<h2>AutoCheck AI</h2><p>Bitte Benutzername und Passwort eingeben.</p>');
-  }
-  const decoded = Buffer.from(auth.slice(6), 'base64').toString();
-  const colonIdx = decoded.indexOf(':');
-  const user = decoded.slice(0, colonIdx);
-  const pass = decoded.slice(colonIdx + 1);
-  if (user === BASIC_USER && pass === BASIC_PASS) return next();
-  res.set('WWW-Authenticate', 'Basic realm="AutoCheck AI - Tester Access"');
-  return res.status(401).type('html').send('<h2>AutoCheck AI</h2><p>Falsches Passwort.</p>');
-}
-
-// Apply auth BEFORE static files and routes
-app.use(basicAuth);
 app.use(express.json({ limit: '2mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
