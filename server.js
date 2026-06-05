@@ -6,6 +6,21 @@ const path       = require('path');
 const app = express();
 app.set('trust proxy', 1);
 app.use(express.json({ limit: '2mb' }));
+
+// ── Basic Auth (temporary protection) ────────────────────────────
+function basicAuth(req, res, next) {
+  const user = process.env.BASIC_USER;
+  const pass = process.env.BASIC_PASS;
+  if (!user || !pass) return next(); // disabled if not configured
+  const auth = req.headers['authorization'] || '';
+  if (auth.startsWith('Basic ')) {
+    const [u, p] = Buffer.from(auth.slice(6), 'base64').toString().split(':');
+    if (u === user && p === pass) return next();
+  }
+  res.set('WWW-Authenticate', 'Basic realm="AutoCheck AI"');
+  res.status(401).send('Login required');
+}
+app.use(basicAuth);
 app.use(express.static(path.join(__dirname, 'public')));
 
 const API_KEY             = process.env.ANTHROPIC_API_KEY;
@@ -63,7 +78,7 @@ function getCacheKey(body) {
 // ── Turnstile verification ────────────────────────────────────────
 async function verifyTurnstile(token, ip) {
   if (!TURNSTILE_SECRET) return true; // not configured = skip
-  if (!token) return true; // widget not loaded = allow through (rate limiter still protects)
+  if (!token) return false;
   try {
     const form = new URLSearchParams();
     form.append('secret', TURNSTILE_SECRET);
