@@ -379,7 +379,22 @@ function openModal(){document.getElementById('modal').classList.add('open');}
 function closeModal(){document.getElementById('modal').classList.remove('open');}
 function purchase(amt){credits+=amt;saveCredits();updateCreditsUI();closeModal();showToast(`⚡ ${amt} ${t('credAdded')}`);}
 
-function setLang(l){lang=l;try{localStorage.setItem('ac_lang',l);}catch(e){}document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('on'));document.querySelector(`.lbtn[onclick="setLang('${l}')"]`).classList.add('on');applyI18n();updateBadges();if(activeTab==='history')renderHistory();if(activeTab==='compare')renderCompare();if(currentResult&&currentFormData&&activeTab==='analyse')renderResults(currentResult,currentFormData);_lastFetched='';tryFetchCarData();}
+
+function rebuildSelects(keepValues=true){
+  const bodyOpts=[['','oSel'],['sedan','oSedan'],['hatch','oHatch'],['estate','oEstate'],['suv','oSUV'],['coupe','oCoupe'],['conv','oConv'],['van','oVan'],['pickup','oPickup']];
+  const engOpts=[['','oSel'],['petrol','oPetrol'],['diesel','oDiesel'],['hybrid','oHybrid'],['phev','oPHEV'],['ev','oEV'],['lpg','oLPG']];
+  const trOpts=[['','oSel'],['manual','oManual'],['auto','oAuto'],['dsg','oDSG'],['cvt','oCVT']];
+  function build(id,opts){
+    const sel=document.getElementById(id);if(!sel)return;
+    const prev=keepValues?sel.value:'';
+    sel.innerHTML=opts.map(([v,k])=>`<option value="${v}">${t(k)}</option>`).join('');
+    if(prev&&sel.querySelector(`option[value="${prev}"]`))sel.value=prev;
+  }
+  build('f-body',bodyOpts);
+  build('f-engine',engOpts);
+  build('f-trans',trOpts);
+}
+function setLang(l){lang=l;try{localStorage.setItem('ac_lang',l);}catch(e){}document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('on'));document.querySelector(`.lbtn[onclick="setLang('${l}')"]`).classList.add('on');applyI18n();rebuildSelects();updateBadges();if(activeTab==='history')renderHistory();if(activeTab==='compare')renderCompare();if(currentResult&&currentFormData&&activeTab==='analyse')renderResults(currentResult,currentFormData);_lastFetched='';tryFetchCarData();}
 function applyI18n(){
   document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(el.tagName!=='INPUT'&&el.tagName!=='TEXTAREA')el.textContent=t(k);});
   document.querySelectorAll('[data-i18n-html]').forEach(el=>{el.innerHTML=t(el.getAttribute('data-i18n-html'));});
@@ -468,22 +483,8 @@ function doNew(){
   ['f-make','f-model','f-year','f-mileage','f-notes'].forEach(id=>{
     const el=document.getElementById(id);if(el){el.value='';el.dispatchEvent(new Event('input'));}
   });
-  // Restore original select options (removes Haiku-generated ones)
-  const _f_body = document.getElementById('f-body');
-  if(_f_body) _f_body.innerHTML = `<option value="" data-i18n="oSel">— выбрать —</option>
-          <option value="sedan" data-i18n="oSedan">Седан</option><option value="hatch" data-i18n="oHatch">Хэтчбек</option>
-          <option value="estate" data-i18n="oEstate">Универсал</option><option value="suv" data-i18n="oSUV">Внедорожник / SUV</option>
-          <option value="coupe" data-i18n="oCoupe">Купе</option><option value="conv" data-i18n="oConv">Кабриолет</option>
-          <option value="van" data-i18n="oVan">Минивэн</option><option value="pickup" data-i18n="oPickup">Пикап</option>`;
-  const _f_engine = document.getElementById('f-engine');
-  if(_f_engine) _f_engine.innerHTML = `<option value="" data-i18n="oSel">— выбрать —</option>
-          <option value="petrol" data-i18n="oPetrol">Бензин</option><option value="diesel" data-i18n="oDiesel">Дизель</option>
-          <option value="hybrid" data-i18n="oHybrid">Гибрид (HEV)</option><option value="phev" data-i18n="oPHEV">PHEV</option>
-          <option value="ev" data-i18n="oEV">Электро</option><option value="lpg" data-i18n="oLPG">Газ (LPG)</option>`;
-  const _f_trans = document.getElementById('f-trans');
-  if(_f_trans) _f_trans.innerHTML = `<option value="" data-i18n="oSel">— выбрать —</option>
-          <option value="manual" data-i18n="oManual">Механика</option><option value="auto" data-i18n="oAuto">Автомат</option>
-          <option value="dsg" data-i18n="oDSG">DSG / Робот</option><option value="cvt" data-i18n="oCVT">Вариатор</option>`;
+  // Restore original select options
+  rebuildSelects(false);
   // Reset car status
   const cs=document.getElementById('car-status');if(cs)cs.style.display='none';
   _lastFetched='';
@@ -841,7 +842,7 @@ function setCarStatus(state) {
   }
 }
 
-setLang('de');updateBadges();updateCreditsUI();loadFromHash();setTimeout(updateBadges,300);loadServerConfig();
+setLang('de');rebuildSelects();updateBadges();updateCreditsUI();loadFromHash();setTimeout(updateBadges,300);loadServerConfig();
 document.querySelectorAll('.nbadge').forEach(b=>{b.style.display='inline-flex';});
 </script>
 
