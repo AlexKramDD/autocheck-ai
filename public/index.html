@@ -91,16 +91,7 @@ textarea{resize:vertical;min-height:62px}
 
 
 
-/* URL IMPORT */
-.url-wrap{margin-bottom:16px;padding:14px 16px;background:rgba(56,189,248,.04);border:1px solid rgba(56,189,248,.15);border-radius:var(--r)}
-.url-row{display:flex;gap:8px}
-.url-input{flex:1;font-family:'Barlow',sans-serif;font-size:13px;padding:9px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(56,189,248,.2);border-radius:var(--r-sm);color:var(--text);outline:none;transition:border-color .15s}
-.url-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(56,189,248,.1)}
-.url-input::placeholder{color:var(--text3)}
-.url-sep{display:flex;align-items:center;gap:10px;margin:14px 0 0;color:var(--text3);font-size:10px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.1em}
 .url-sep::before,.url-sep::after{content:'';flex:1;height:1px;background:var(--bd)}
-.url-note{font-size:11px;color:var(--text3);margin-top:7px;line-height:1.5}
-.url-status{font-size:12px;margin-top:7px;display:flex;align-items:center;gap:7px}
 
 /* RISK BAR */
 .risk-card{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:20px;margin-bottom:14px;backdrop-filter:blur(8px);animation:fadeUp .4s ease both}
@@ -244,24 +235,6 @@ textarea{resize:vertical;min-height:62px}
 
 <div class="wrap">
 <div class="tab-pane on" id="pane-analyse">
-
-
-
-  <div class="url-wrap">
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">
-      🔗 <span data-i18n="urlLabel">Fahrzeug-Link einfügen (optional)</span>
-    </div>
-    <div class="url-row">
-      <input type="url" class="url-input" id="f-url"
-        data-i18n-ph="urlPh"
-        placeholder="Link von mobile.de, AutoScout24, eBay Kleinanzeigen…"
-        oninput="scheduleUrlFetch()"/>
-      <button class="btn btn-ghost" style="flex-shrink:0;padding:9px 14px;font-size:18px" onclick="doFetchUrl()" title="Laden">→</button>
-    </div>
-    <div id="url-status" class="url-status" style="display:none"></div>
-    <div class="url-note" data-i18n="urlNote">Sie stellen den Link selbst bereit. AutoCheck AI speichert keine Daten von externen Seiten.</div>
-    <div class="url-sep"><span data-i18n="urlOr">oder manuell eingeben</span></div>
-  </div>
   <div class="card">
     <div class="card-hd" data-i18n="formTitle">Данные об автомобиле</div>
     <div class="fg fg-3">
@@ -369,9 +342,9 @@ textarea{resize:vertical;min-height:62px}
 
 <script>
 const I={
-ru:{tagline:'Советник покупателя',creditsLbl:'анализов',tabAnalyse:'Анализ',tabHistory:'История',tabCompare:'Сравнение',formTitle:'Данные об автомобиле',lMake:'Марка',lModel:'Модель',lYear:'Год',lMileage:'Пробег (тыс. км)',lBody:'Кузов',lEngine:'Двигатель',lTrans:'Трансмиссия',lNotes:'Дополнительно',phMake:'BMW, Toyota, VW…',phModel:'320d, Corolla, Golf…',phNotes:'один владелец, ТО у дилера…',oSel:'— выбрать —',oSedan:'Седан',oHatch:'Хэтчбек',oEstate:'Универсал',oSUV:'Внедорожник / SUV',oCoupe:'Купе',oConv:'Кабриолет',oVan:'Минивэн',oPickup:'Пикап',oPetrol:'Бензин',oDiesel:'Дизель',oHybrid:'Гибрид (HEV)',oPHEV:'Plug-in Hybrid',oEV:'Электро',oLPG:'Газ (LPG)',oManual:'Механика',oAuto:'Автомат',oDSG:'DSG / Робот',oCVT:'Вариатор',btnAnalyse:'Запустить анализ',btnShare:'Поделиться',btnAddCmp:'В сравнение',btnNew:'Новый анализ',sRisk:'Оценка риска',sIssues:'Проблемы модели',sCheck:'Чек-лист осмотра',sQs:'Вопросы продавцу',sFlags:'Стоп-сигналы',sTip:'Главный совет',rLow:'Низкий риск',rMedium:'Средний риск',rHigh:'Тщательно проверить',svCritical:'Критично',svWarning:'Предупреждение',svOk:'OK',loadMsg:'Анализирую…',loadSub:'Изучаю форумы, базы данных, известные проблемы модели…',toastCopy:'Ссылка скопирована!',toastCmpAdd:'Добавлено в сравнение',toastCmpMax:'Максимум 3 авто',noMake:'Укажите марку и модель.',errPfx:'Ошибка: ',noCredits:'Кредиты закончились',hEmpty:'История пуста',hEmptySub:'Здесь будут ваши анализы',hView:'Открыть',hDel:'Удалить',hClear:'Очистить историю',cEmpty:'Нет авто для сравнения',cEmptySub:'Анализируйте авто и нажимайте «В сравнение»',cClear:'Очистить',cTitle:'Сравнение',cRisk:'Риск',cIssues:'Проблем',cQs:'Вопросов',cView:'Открыть',modalTitle:'Выберите пакет',pkg1n:'Старт',pkg2n:'Стандарт',pkg3n:'Про',analyses:'анализов',popular:'Популярно',buyNow:'Купить',pkg1ppu:'€0.40 / анализ',pkg2ppu:'€0.35 / анализ',pkg3ppu:'€0.34 / анализ',demoNote:'🚧 Демо-режим: оплата не подключена — кредиты добавляются сразу. Для запуска: подключите Stripe Checkout.',riskAI:'Оценка AI',invalidCar:'Проверьте марку и модель — такой автомобиль не найден в базе. Уточните написание.',emailTitle:'Отправить на Email',emailTo:'Email получателя',emailPh:'получатель@example.com',emailOpen:'Открыть в почте',emailCopy:'Скопировать',btnEmail:'Email',btnPDFNew:'Печать / PDF',toastEmailCopy:'Текст скопирован!',toastPDFStart:'Создаётся PDF…',buyTip:'Купить пакет запросов',srcTitle:'🌐 Живые источники',srcLoading:'Ищу актуальные данные в интернете…',srcNote:'Результаты живого поиска — не проверены независимо.',errRateLimit:'Превышен лимит запросов — подождите 1 минуту.',urlLabel:'Вставить ссылку на авто (необязательно)',urlPh:'Ссылка с mobile.de, AutoScout24…',urlOr:'или ввести вручную',urlNote:'Вы сами предоставляете ссылку. AutoCheck AI не хранит данные внешних сайтов.',urlLoad:'Загружаю данные автомобиля…',urlOk:'Данные загружены — проверьте',urlErr:'Ссылка недоступна — введите вручную',credAdded:'кредитов добавлено!'},
-de:{tagline:'Fahrzeugberater',creditsLbl:'Analysen',tabAnalyse:'Analyse',tabHistory:'Verlauf',tabCompare:'Vergleich',formTitle:'Fahrzeugdaten',lMake:'Marke',lModel:'Modell',lYear:'Baujahr',lMileage:'Km-Stand (Tsd.)',lBody:'Karosserie',lEngine:'Motor',lTrans:'Getriebe',lNotes:'Weitere Angaben',phMake:'BMW, Toyota, VW…',phModel:'320d, Corolla, Golf…',phNotes:'ein Vorbesitzer, Scheckheft…',oSel:'— wählen —',oSedan:'Limousine',oHatch:'Schrägheck',oEstate:'Kombi',oSUV:'SUV',oCoupe:'Coupé',oConv:'Cabriolet',oVan:'Van',oPickup:'Pickup',oPetrol:'Benzin',oDiesel:'Diesel',oHybrid:'Hybrid',oPHEV:'Plug-in Hybrid',oEV:'Elektro',oLPG:'LPG',oManual:'Schaltgetriebe',oAuto:'Automatik',oDSG:'DSG',oCVT:'CVT',btnAnalyse:'Analyse starten',btnShare:'Teilen',btnAddCmp:'Vergleich',btnNew:'Neue Analyse',sRisk:'Risikobewertung',sIssues:'Modellprobleme',sCheck:'Checkliste',sQs:'Fragen an Verkäufer',sFlags:'Warnsignale',sTip:'Wichtigster Tipp',rLow:'Geringes Risiko',rMedium:'Mittleres Risiko',rHigh:'Genauer prüfen',svCritical:'Kritisch',svWarning:'Warnung',svOk:'OK',loadMsg:'Analysiere…',loadSub:'Prüfe Foren, Datenbanken, bekannte Probleme…',toastCopy:'Link kopiert!',toastCmpAdd:'Zum Vergleich hinzugefügt',toastCmpMax:'Max. 3 Fahrzeuge',noMake:'Marke und Modell angeben.',errPfx:'Fehler: ',noCredits:'Kein Guthaben',hEmpty:'Kein Verlauf',hEmptySub:'Ihre Analysen erscheinen hier',hView:'Öffnen',hDel:'Löschen',hClear:'Verlauf löschen',cEmpty:'Keine Fahrzeuge',cEmptySub:'Fahrzeuge analysieren und vergleichen',cClear:'Leeren',cTitle:'Vergleich',cRisk:'Risiko',cIssues:'Probleme',cQs:'Fragen',cView:'Öffnen',modalTitle:'Paket wählen',pkg1n:'Starter',pkg2n:'Standard',pkg3n:'Pro',analyses:'Analysen',popular:'Beliebt',buyNow:'Kaufen',pkg1ppu:'€0.40 / Analyse',pkg2ppu:'€0.35 / Analyse',pkg3ppu:'€0.34 / Analyse',demoNote:'🚧 Demo-Modus: Zahlung nicht verbunden — Guthaben sofort hinzugefügt. Für Produktion: Stripe Checkout verbinden.',riskAI:'KI-Bewertung',invalidCar:'Marke oder Modell nicht gefunden. Bitte Schreibweise prüfen.',emailTitle:'Per E-Mail senden',emailTo:'Empfänger-E-Mail',emailPh:'empfaenger@example.com',emailOpen:'Im E-Mail-Client öffnen',emailCopy:'Kopieren',btnEmail:'E-Mail',btnPDFNew:'Drucken / PDF',toastEmailCopy:'Text kopiert!',toastPDFStart:'PDF wird erstellt…',buyTip:'Mehr Analysen kaufen',srcTitle:'🌐 Aktuelle Online-Quellen',srcLoading:'Durchsuche das Web nach aktuellen Meldungen…',srcNote:'Ergebnisse aus Live-Websuche — extern nicht überprüft.',errRateLimit:'API-Limit erreicht — bitte 1 Minute warten und erneut versuchen.',urlLabel:'Fahrzeug-Link einfügen (optional)',urlPh:'Link von mobile.de, AutoScout24, eBay…',urlOr:'oder manuell eingeben',urlNote:'Sie stellen den Link selbst bereit. AutoCheck AI speichert keine Daten von externen Seiten.',urlLoad:'Fahrzeugdaten werden geladen…',urlOk:'Daten geladen — bitte prüfen',urlErr:'Link nicht lesbar — bitte manuell eingeben',credAdded:'Analysen hinzugefügt!'},
-en:{tagline:'Used Car Advisor',creditsLbl:'analyses',tabAnalyse:'Analysis',tabHistory:'History',tabCompare:'Compare',formTitle:'Vehicle Details',lMake:'Make',lModel:'Model',lYear:'Year',lMileage:'Mileage (k km)',lBody:'Body',lEngine:'Engine',lTrans:'Transmission',lNotes:'Notes',phMake:'BMW, Toyota, VW…',phModel:'320d, Corolla, Golf…',phNotes:'one owner, full service history…',oSel:'— select —',oSedan:'Saloon',oHatch:'Hatchback',oEstate:'Estate',oSUV:'SUV',oCoupe:'Coupé',oConv:'Convertible',oVan:'MPV',oPickup:'Pickup',oPetrol:'Petrol',oDiesel:'Diesel',oHybrid:'Hybrid',oPHEV:'Plug-in Hybrid',oEV:'Electric',oLPG:'LPG',oManual:'Manual',oAuto:'Automatic',oDSG:'DSG/DCT',oCVT:'CVT',btnAnalyse:'Run Analysis',btnShare:'Share',btnAddCmp:'Compare',btnNew:'New Analysis',sRisk:'Risk Assessment',sIssues:'Known Issues',sCheck:'Inspection Checklist',sQs:'Questions for Seller',sFlags:'Walk Away If…',sTip:'Key Advice',rLow:'Low Risk',rMedium:'Medium Risk',rHigh:'Inspect Carefully',svCritical:'Critical',svWarning:'Warning',svOk:'OK',loadMsg:'Analysing…',loadSub:'Checking forums, databases, known model issues…',toastCopy:'Link copied!',toastCmpAdd:'Added to comparison',toastCmpMax:'Max 3 vehicles',noMake:'Enter make and model.',errPfx:'Error: ',noCredits:'No credits left',hEmpty:'No history yet',hEmptySub:'Your analyses will appear here',hView:'View',hDel:'Delete',hClear:'Clear history',cEmpty:'Nothing to compare',cEmptySub:'Analyse vehicles and add to comparison',cClear:'Clear',cTitle:'Comparison',cRisk:'Risk',cIssues:'Issues',cQs:'Questions',cView:'View',modalTitle:'Choose a package',pkg1n:'Starter',pkg2n:'Standard',pkg3n:'Pro',analyses:'analyses',popular:'Popular',buyNow:'Buy',pkg1ppu:'€0.40 / analysis',pkg2ppu:'€0.35 / analysis',pkg3ppu:'€0.34 / analysis',demoNote:'🚧 Demo mode: payment not connected — credits added instantly. Connect Stripe Checkout for production.',riskAI:'AI Assessment',invalidCar:'Make or model not recognised. Please check the spelling.',emailTitle:'Send by Email',emailTo:'Recipient Email',emailPh:'recipient@example.com',emailOpen:'Open in Email Client',emailCopy:'Copy',btnEmail:'Email',btnPDFNew:'Print / PDF',toastEmailCopy:'Text copied!',toastPDFStart:'Generating PDF…',buyTip:'Buy more analyses',srcTitle:'🌐 Live Sources',srcLoading:'Searching the web for current reports…',srcNote:'Results from live web search — not independently verified.',errRateLimit:'Rate limit reached — please wait 1 minute and try again.',urlLabel:'Paste Vehicle Link (optional)',urlPh:'Link from mobile.de, AutoScout24, eBay…',urlOr:'or enter manually',urlNote:'You provide the link yourself. AutoCheck AI does not store data from external sites.',urlLoad:'Loading vehicle data…',urlOk:'Data loaded — please review',urlErr:'Could not read link — please enter manually',credAdded:'credits added!'}
+ru:{tagline:'Советник покупателя',creditsLbl:'анализов',tabAnalyse:'Анализ',tabHistory:'История',tabCompare:'Сравнение',formTitle:'Данные об автомобиле',lMake:'Марка',lModel:'Модель',lYear:'Год',lMileage:'Пробег (тыс. км)',lBody:'Кузов',lEngine:'Двигатель',lTrans:'Трансмиссия',lNotes:'Дополнительно',phMake:'BMW, Toyota, VW…',phModel:'320d, Corolla, Golf…',phNotes:'один владелец, ТО у дилера…',oSel:'— выбрать —',oSedan:'Седан',oHatch:'Хэтчбек',oEstate:'Универсал',oSUV:'Внедорожник / SUV',oCoupe:'Купе',oConv:'Кабриолет',oVan:'Минивэн',oPickup:'Пикап',oPetrol:'Бензин',oDiesel:'Дизель',oHybrid:'Гибрид (HEV)',oPHEV:'Plug-in Hybrid',oEV:'Электро',oLPG:'Газ (LPG)',oManual:'Механика',oAuto:'Автомат',oDSG:'DSG / Робот',oCVT:'Вариатор',btnAnalyse:'Запустить анализ',btnShare:'Поделиться',btnAddCmp:'В сравнение',btnNew:'Новый анализ',sRisk:'Оценка риска',sIssues:'Проблемы модели',sCheck:'Чек-лист осмотра',sQs:'Вопросы продавцу',sFlags:'Стоп-сигналы',sTip:'Главный совет',rLow:'Низкий риск',rMedium:'Средний риск',rHigh:'Тщательно проверить',svCritical:'Критично',svWarning:'Предупреждение',svOk:'OK',loadMsg:'Анализирую…',loadSub:'Изучаю форумы, базы данных, известные проблемы модели…',toastCopy:'Ссылка скопирована!',toastCmpAdd:'Добавлено в сравнение',toastCmpMax:'Максимум 3 авто',noMake:'Укажите марку и модель.',errPfx:'Ошибка: ',noCredits:'Кредиты закончились',hEmpty:'История пуста',hEmptySub:'Здесь будут ваши анализы',hView:'Открыть',hDel:'Удалить',hClear:'Очистить историю',cEmpty:'Нет авто для сравнения',cEmptySub:'Анализируйте авто и нажимайте «В сравнение»',cClear:'Очистить',cTitle:'Сравнение',cRisk:'Риск',cIssues:'Проблем',cQs:'Вопросов',cView:'Открыть',modalTitle:'Выберите пакет',pkg1n:'Старт',pkg2n:'Стандарт',pkg3n:'Про',analyses:'анализов',popular:'Популярно',buyNow:'Купить',pkg1ppu:'€0.40 / анализ',pkg2ppu:'€0.35 / анализ',pkg3ppu:'€0.34 / анализ',demoNote:'🚧 Демо-режим: оплата не подключена — кредиты добавляются сразу. Для запуска: подключите Stripe Checkout.',riskAI:'Оценка AI',invalidCar:'Проверьте марку и модель — такой автомобиль не найден в базе. Уточните написание.',emailTitle:'Отправить на Email',emailTo:'Email получателя',emailPh:'получатель@example.com',emailOpen:'Открыть в почте',emailCopy:'Скопировать',btnEmail:'Email',btnPDFNew:'Печать / PDF',toastEmailCopy:'Текст скопирован!',toastPDFStart:'Создаётся PDF…',buyTip:'Купить пакет запросов',srcTitle:'🌐 Живые источники',srcLoading:'Ищу актуальные данные в интернете…',srcNote:'Результаты живого поиска — не проверены независимо.',errRateLimit:'Превышен лимит запросов — подождите 1 минуту.',credAdded:'кредитов добавлено!'},
+de:{tagline:'Fahrzeugberater',creditsLbl:'Analysen',tabAnalyse:'Analyse',tabHistory:'Verlauf',tabCompare:'Vergleich',formTitle:'Fahrzeugdaten',lMake:'Marke',lModel:'Modell',lYear:'Baujahr',lMileage:'Km-Stand (Tsd.)',lBody:'Karosserie',lEngine:'Motor',lTrans:'Getriebe',lNotes:'Weitere Angaben',phMake:'BMW, Toyota, VW…',phModel:'320d, Corolla, Golf…',phNotes:'ein Vorbesitzer, Scheckheft…',oSel:'— wählen —',oSedan:'Limousine',oHatch:'Schrägheck',oEstate:'Kombi',oSUV:'SUV',oCoupe:'Coupé',oConv:'Cabriolet',oVan:'Van',oPickup:'Pickup',oPetrol:'Benzin',oDiesel:'Diesel',oHybrid:'Hybrid',oPHEV:'Plug-in Hybrid',oEV:'Elektro',oLPG:'LPG',oManual:'Schaltgetriebe',oAuto:'Automatik',oDSG:'DSG',oCVT:'CVT',btnAnalyse:'Analyse starten',btnShare:'Teilen',btnAddCmp:'Vergleich',btnNew:'Neue Analyse',sRisk:'Risikobewertung',sIssues:'Modellprobleme',sCheck:'Checkliste',sQs:'Fragen an Verkäufer',sFlags:'Warnsignale',sTip:'Wichtigster Tipp',rLow:'Geringes Risiko',rMedium:'Mittleres Risiko',rHigh:'Genauer prüfen',svCritical:'Kritisch',svWarning:'Warnung',svOk:'OK',loadMsg:'Analysiere…',loadSub:'Prüfe Foren, Datenbanken, bekannte Probleme…',toastCopy:'Link kopiert!',toastCmpAdd:'Zum Vergleich hinzugefügt',toastCmpMax:'Max. 3 Fahrzeuge',noMake:'Marke und Modell angeben.',errPfx:'Fehler: ',noCredits:'Kein Guthaben',hEmpty:'Kein Verlauf',hEmptySub:'Ihre Analysen erscheinen hier',hView:'Öffnen',hDel:'Löschen',hClear:'Verlauf löschen',cEmpty:'Keine Fahrzeuge',cEmptySub:'Fahrzeuge analysieren und vergleichen',cClear:'Leeren',cTitle:'Vergleich',cRisk:'Risiko',cIssues:'Probleme',cQs:'Fragen',cView:'Öffnen',modalTitle:'Paket wählen',pkg1n:'Starter',pkg2n:'Standard',pkg3n:'Pro',analyses:'Analysen',popular:'Beliebt',buyNow:'Kaufen',pkg1ppu:'€0.40 / Analyse',pkg2ppu:'€0.35 / Analyse',pkg3ppu:'€0.34 / Analyse',demoNote:'🚧 Demo-Modus: Zahlung nicht verbunden — Guthaben sofort hinzugefügt. Für Produktion: Stripe Checkout verbinden.',riskAI:'KI-Bewertung',invalidCar:'Marke oder Modell nicht gefunden. Bitte Schreibweise prüfen.',emailTitle:'Per E-Mail senden',emailTo:'Empfänger-E-Mail',emailPh:'empfaenger@example.com',emailOpen:'Im E-Mail-Client öffnen',emailCopy:'Kopieren',btnEmail:'E-Mail',btnPDFNew:'Drucken / PDF',toastEmailCopy:'Text kopiert!',toastPDFStart:'PDF wird erstellt…',buyTip:'Mehr Analysen kaufen',srcTitle:'🌐 Aktuelle Online-Quellen',srcLoading:'Durchsuche das Web nach aktuellen Meldungen…',srcNote:'Ergebnisse aus Live-Websuche — extern nicht überprüft.',errRateLimit:'API-Limit erreicht — bitte 1 Minute warten und erneut versuchen.',credAdded:'Analysen hinzugefügt!'},
+en:{tagline:'Used Car Advisor',creditsLbl:'analyses',tabAnalyse:'Analysis',tabHistory:'History',tabCompare:'Compare',formTitle:'Vehicle Details',lMake:'Make',lModel:'Model',lYear:'Year',lMileage:'Mileage (k km)',lBody:'Body',lEngine:'Engine',lTrans:'Transmission',lNotes:'Notes',phMake:'BMW, Toyota, VW…',phModel:'320d, Corolla, Golf…',phNotes:'one owner, full service history…',oSel:'— select —',oSedan:'Saloon',oHatch:'Hatchback',oEstate:'Estate',oSUV:'SUV',oCoupe:'Coupé',oConv:'Convertible',oVan:'MPV',oPickup:'Pickup',oPetrol:'Petrol',oDiesel:'Diesel',oHybrid:'Hybrid',oPHEV:'Plug-in Hybrid',oEV:'Electric',oLPG:'LPG',oManual:'Manual',oAuto:'Automatic',oDSG:'DSG/DCT',oCVT:'CVT',btnAnalyse:'Run Analysis',btnShare:'Share',btnAddCmp:'Compare',btnNew:'New Analysis',sRisk:'Risk Assessment',sIssues:'Known Issues',sCheck:'Inspection Checklist',sQs:'Questions for Seller',sFlags:'Walk Away If…',sTip:'Key Advice',rLow:'Low Risk',rMedium:'Medium Risk',rHigh:'Inspect Carefully',svCritical:'Critical',svWarning:'Warning',svOk:'OK',loadMsg:'Analysing…',loadSub:'Checking forums, databases, known model issues…',toastCopy:'Link copied!',toastCmpAdd:'Added to comparison',toastCmpMax:'Max 3 vehicles',noMake:'Enter make and model.',errPfx:'Error: ',noCredits:'No credits left',hEmpty:'No history yet',hEmptySub:'Your analyses will appear here',hView:'View',hDel:'Delete',hClear:'Clear history',cEmpty:'Nothing to compare',cEmptySub:'Analyse vehicles and add to comparison',cClear:'Clear',cTitle:'Comparison',cRisk:'Risk',cIssues:'Issues',cQs:'Questions',cView:'View',modalTitle:'Choose a package',pkg1n:'Starter',pkg2n:'Standard',pkg3n:'Pro',analyses:'analyses',popular:'Popular',buyNow:'Buy',pkg1ppu:'€0.40 / analysis',pkg2ppu:'€0.35 / analysis',pkg3ppu:'€0.34 / analysis',demoNote:'🚧 Demo mode: payment not connected — credits added instantly. Connect Stripe Checkout for production.',riskAI:'AI Assessment',invalidCar:'Make or model not recognised. Please check the spelling.',emailTitle:'Send by Email',emailTo:'Recipient Email',emailPh:'recipient@example.com',emailOpen:'Open in Email Client',emailCopy:'Copy',btnEmail:'Email',btnPDFNew:'Print / PDF',toastEmailCopy:'Text copied!',toastPDFStart:'Generating PDF…',buyTip:'Buy more analyses',srcTitle:'🌐 Live Sources',srcLoading:'Searching the web for current reports…',srcNote:'Results from live web search — not independently verified.',errRateLimit:'Rate limit reached — please wait 1 minute and try again.',credAdded:'credits added!'}
 };
 
 let lang='de',apiKey='',apiVisible=true;
@@ -701,120 +674,6 @@ function renderSources(findings) {
   h += `<div class="src-note">🔍 ${t('srcNote')}</div></div>`;
   el.innerHTML = h;
 }
-
-// ════ URL IMPORT ════
-let _urlTimer = null;
-
-function scheduleUrlFetch() {
-  clearTimeout(_urlTimer);
-  const url = document.getElementById('f-url').value.trim();
-  if (!url.startsWith('http')) return;
-  _urlTimer = setTimeout(doFetchUrl, 1500);
-}
-
-async function doFetchUrl() {
-  const url = document.getElementById('f-url').value.trim();
-  if (!url.startsWith('http')) return;
-
-  setUrlStatus('loading');
-
-  const langName = {de:'German',en:'English',ru:'Russian'}[lang]||'German';
-  const prompt = `The user wants to analyze this car listing and provided the URL themselves: ${url}
-
-Please search for and read this specific page, then extract the vehicle details.
-
-Return ONLY valid JSON (no markdown):
-{
-  "make": "manufacturer name (e.g. BMW, Toyota)",
-  "model": "model name (e.g. 320d, Corolla)",
-  "year": "4-digit production year",
-  "mileage": "odometer in thousands as a number (e.g. 85 for 85000 km)",
-  "body": "one of exactly: sedan|hatch|estate|suv|coupe|conv|van|pickup",
-  "engine": "engine as shown (e.g. 2.0 TDI 150hp Diesel)",
-  "trans": "one of exactly: manual|auto|dsg|cvt",
-  "notes": "brief summary: owners, condition, color, key extras"
-}
-If the page cannot be accessed, return: {"error":"cannot_access"}
-Data labels must be in ${langName}.`;
-
-  try {
-    const isFile = false; // always use server proxy
-    const endpoint = isFile ? 'https://api.anthropic.com/v1/messages' : '/api/analyse';
-    const headers = {'Content-Type':'application/json'};
-    if (isFile && typeof apiKey !== 'undefined' && apiKey) {
-      headers['x-api-key'] = apiKey;
-      headers['anthropic-version'] = '2023-06-01';
-      headers['anthropic-dangerous-direct-browser-access'] = 'true';
-      headers['anthropic-beta'] = 'web-search-2025-03-05';
-    }
-
-    const res = await fetch(endpoint, {
-      method:'POST', headers,
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
-        max_tokens: 500,
-        temperature: 0,
-        tools: [{"type":"web_search_20250305","name":"web_search"}],
-        messages: [{role:'user', content:prompt}]
-      })
-    });
-
-    if (!res.ok) throw new Error(res.statusText);
-    const data = await res.json();
-    const raw = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
-    const d = JSON.parse(raw);
-
-    if (d.error) { setUrlStatus('error'); return; }
-
-    // Fill form fields
-    if (d.make)    document.getElementById('f-make').value    = d.make;
-    if (d.model)   document.getElementById('f-model').value   = d.model;
-    if (d.year)    document.getElementById('f-year').value    = d.year;
-    if (d.mileage) document.getElementById('f-mileage').value = String(d.mileage).replace(/\D/g,'').slice(0,4)||d.mileage;
-    if (d.notes)   document.getElementById('f-notes').value   = d.notes;
-
-    // Map body type to select value
-    if (d.body) {
-      const bm = {sedan:'sedan',limousine:'sedan',hatch:'hatch',hatchback:'hatch',schrägheck:'hatch',estate:'estate',kombi:'estate',wagon:'estate',suv:'suv',crossover:'suv',geländewagen:'suv',coupe:'coupe',coupé:'coupe',conv:'conv',convertible:'conv',cabriolet:'conv',cabrio:'conv',van:'van',mpv:'van',minivan:'van',pickup:'pickup'};
-      const bv = bm[d.body.toLowerCase()] || d.body;
-      const sel = document.getElementById('f-body');
-      if ([...sel.options].some(o=>o.value===bv)) sel.value = bv;
-    }
-
-    // Map transmission to select value
-    if (d.trans) {
-      const tm = {manual:'manual',schaltgetriebe:'manual',auto:'auto',automatic:'auto',automatik:'auto',dsg:'dsg',dct:'dsg',robot:'dsg',robotisiert:'dsg',cvt:'cvt',stufenlos:'cvt'};
-      const tv = tm[d.trans.toLowerCase()] || d.trans;
-      const sel = document.getElementById('f-trans');
-      if ([...sel.options].some(o=>o.value===tv)) sel.value = tv;
-    }
-
-    // Populate dropdowns via Haiku
-    _lastFetched = '';
-    scheduleCarFetch();
-    setUrlStatus('ok');
-
-  } catch(e) {
-    setUrlStatus('error');
-  }
-}
-
-function setUrlStatus(state) {
-  const el = document.getElementById('url-status');
-  if (!el) return;
-  if (state === 'loading') {
-    el.style.display = 'flex';
-    el.innerHTML = `<div class="spin-ring" style="width:14px;height:14px;border-width:2px;margin:0;flex-shrink:0"></div><span style="color:var(--text2)">${t('urlLoad')}</span>`;
-  } else if (state === 'ok') {
-    el.style.display = 'flex';
-    el.innerHTML = `<span style="color:var(--green)">✓ ${t('urlOk')}</span>`;
-    setTimeout(()=>{ el.style.display='none'; }, 4000);
-  } else {
-    el.style.display = 'flex';
-    el.innerHTML = `<span style="color:var(--amber)">⚠ ${t('urlErr')}</span>`;
-  }
-}
-
 
 // ════ CLOUDFLARE TURNSTILE ════
 let turnstileToken = null;
