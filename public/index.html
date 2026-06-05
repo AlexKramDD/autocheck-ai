@@ -192,6 +192,11 @@ textarea{resize:vertical;min-height:62px}
 
 @media(max-width:600px){.hdr-inner{padding:0 14px;height:54px}.logo-sub{display:none}.wrap{padding:14px 12px 36px}.card{padding:16px}.fg-n{grid-template-columns:1fr}.pkg-grid{grid-template-columns:1fr}}
 @media print{.hdr,.nav,.api-card,.card,.act-bar,.modal-overlay{display:none!important}.wrap{padding:0;max-width:100%}.rsec{box-shadow:none!important;break-inside:avoid}body{background:#fff;color:#000}}
+
+/* FOOTER */
+.site-footer{text-align:center;padding:18px 20px;border-top:1px solid var(--bd);font-size:12px;color:var(--text3);margin-top:24px}
+.site-footer a{color:var(--text3);text-decoration:none;margin:0 10px;transition:color .15s}
+.site-footer a:hover{color:var(--text2)}
 </style>
 </head>
 <body>
@@ -576,7 +581,14 @@ body{font-family:Arial,Helvetica,sans-serif;color:#1a1a1a;background:#fff;font-s
 </div>
 ${sections.join('')}
 <div class="footer">AutoCheck AI · ${window.location.hostname||'autocheck-ai'} · ${t('riskAI')}</div>
-</div></body></html>`;
+</div>
+<footer class="site-footer">
+  © 2026 AutoCheck AI &nbsp;·&nbsp;
+  <a href="/impressum">Impressum</a>
+  <a href="/datenschutz">Datenschutz</a>
+  <a href="/agb">AGB</a>
+</footer>
+</body></html>`;
 
   const w=window.open('','_blank','width=900,height=700');
   if(!w){showToast('⚠ Pop-up blockiert — bitte erlauben');return;}
@@ -832,5 +844,12 @@ function setCarStatus(state) {
 setLang('de');updateBadges();updateCreditsUI();loadFromHash();setTimeout(updateBadges,300);loadServerConfig();
 document.querySelectorAll('.nbadge').forEach(b=>{b.style.display='inline-flex';});
 </script>
+
+<footer class="site-footer">
+  © 2026 AutoCheck AI &nbsp;·&nbsp;
+  <a href="/impressum">Impressum</a>
+  <a href="/datenschutz">Datenschutz</a>
+  <a href="/agb">AGB</a>
+</footer>
 </body>
 </html>
