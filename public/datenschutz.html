@@ -3,57 +3,136 @@
 <title>Datenschutz — AutoCheck AI</title><style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#07090F;color:#E2E8F0;min-height:100vh}
-.hdr{background:rgba(7,9,15,.95);border-bottom:1px solid rgba(255,255,255,.07);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
-.logo{font-family:Arial,sans-serif;font-size:18px;font-weight:900;color:#fff;text-decoration:none}
+.hdr{background:rgba(7,9,15,.95);border-bottom:1px solid rgba(255,255,255,.07);padding:0 20px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.logo{font-family:Arial,sans-serif;font-size:18px;font-weight:900;color:#fff;text-decoration:none;letter-spacing:.02em}
 .logo span{color:#F59E0B}
+.hdr-right{display:flex;align-items:center;gap:12px}
 .back{color:#94A3B8;text-decoration:none;font-size:13px}
 .back:hover{color:#fff}
-.wrap{max-width:760px;margin:0 auto;padding:40px 24px 60px}
-h1{font-size:26px;font-weight:700;margin-bottom:6px;color:#fff}
-.sub{font-size:12px;color:#64748B;margin-bottom:32px}
-h2{font-size:15px;font-weight:600;margin:28px 0 8px;color:#E2E8F0;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.07)}
-p,li{font-size:14px;line-height:1.75;color:#94A3B8;margin-bottom:10px}
-ul{margin:6px 0 12px 20px}
+.lang-sw{display:flex;gap:4px}
+.lbtn{background:none;border:1px solid rgba(255,255,255,.12);color:#94A3B8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;cursor:pointer;letter-spacing:.06em}
+.lbtn.on{background:#F59E0B;border-color:#F59E0B;color:#000}
+.wrap{max-width:760px;margin:0 auto;padding:36px 20px 60px}
+h1{font-size:24px;font-weight:700;margin-bottom:6px;color:#fff}
+.sub{font-size:12px;color:#64748B;margin-bottom:28px}
+h2{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin:24px 0 8px;color:#CBD5E1;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.07)}
+p{font-size:14px;line-height:1.75;color:#94A3B8;margin-bottom:10px}
+ul{margin:4px 0 12px 18px}
+li{font-size:14px;line-height:1.75;color:#94A3B8;margin-bottom:4px}
 a{color:#38BDF8}
-.ph{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:4px;padding:1px 8px;color:#F59E0B;font-size:12px}
-.footer{text-align:center;font-size:11px;color:#475569;margin-top:40px;padding-top:16px;border-top:1px solid rgba(255,255,255,.05)}
+.ph{display:inline-block;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:4px;padding:1px 8px;color:#F59E0B;font-size:12px}
+.lang-sec{display:none}
+.lang-sec.active{display:block}
+.footer{text-align:center;font-size:11px;color:#475569;margin-top:40px;padding-top:16px;border-top:1px solid rgba(255,255,255,.06)}
+.footer a{color:#475569;text-decoration:none;margin:0 8px}
+.footer a:hover{color:#94A3B8}
 </style></head><body>
 <header class="hdr">
   <a class="logo" href="/">AutoCheck<span>AI</span></a>
-  <a class="back" href="/">← zurück zur App</a>
+  <div class="hdr-right">
+    <div class="lang-sw">
+      <button class="lbtn on" data-l="de" onclick="setLang('de')">DE</button>
+      <button class="lbtn" data-l="en" onclick="setLang('en')">EN</button>
+      <button class="lbtn" data-l="ru" onclick="setLang('ru')">RU</button>
+    </div>
+    <a class="back" href="/" id="back-link">← zurück</a>
+  </div>
 </header>
 <div class="wrap">
-<h1>Datenschutzerklärung</h1>
-<p class="sub">Stand: Juni 2026</p>
 
+<div id="sec-de" class="lang-sec">
+<h1>Datenschutzerklärung</h1><p class="sub">Stand: Juni 2026</p>
 <h2>1. Verantwortlicher</h2>
-<p><span class="ph">[Name und Anschrift — wie im Impressum]</span><br>
-E-Mail: <span class="ph">[ihre@email.de]</span></p>
-
+<p><span class="ph">[Name, Anschrift]</span> · E-Mail: <span class="ph">[ihre@email.de]</span></p>
 <h2>2. Verarbeitete Daten</h2>
 <ul>
-<li><strong>IP-Adresse</strong> — automatisch erfasst für Sicherheit und Rate-Limiting. Speicherdauer: max. 24 Stunden.</li>
-<li><strong>Fahrzeugdaten</strong> (Marke, Modell, Jahr etc.) — zur KI-Analyse übermittelt, nicht dauerhaft gespeichert.</li>
+<li><strong>IP-Adresse</strong> — für Sicherheit und Rate-Limiting. Max. 24 Stunden.</li>
+<li><strong>Fahrzeugdaten</strong> — zur KI-Analyse übermittelt, nicht dauerhaft gespeichert.</li>
 <li><strong>Guthaben und Verlauf</strong> — nur lokal im Browser (localStorage). Kein Serverzugriff.</li>
 </ul>
-
 <h2>3. Drittanbieter</h2>
 <ul>
-<li><strong>Anthropic, Inc.</strong> (USA) — KI-Verarbeitung. <a href="https://www.anthropic.com/privacy" target="_blank">Datenschutz</a></li>
-<li><strong>Render Services, Inc.</strong> (USA) — Hosting. <a href="https://render.com/privacy" target="_blank">Datenschutz</a></li>
-<li><strong>Cloudflare, Inc.</strong> (USA) — Bot-Schutz. <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">Datenschutz</a></li>
-<li><strong>Upstash, Inc.</strong> (USA) — Ergebnis-Cache. <a href="https://upstash.com/privacy" target="_blank">Datenschutz</a></li>
+<li><strong>Anthropic</strong> (USA) — KI-Verarbeitung. <a href="https://www.anthropic.com/privacy" target="_blank">Datenschutz</a></li>
+<li><strong>Render</strong> (USA) — Hosting. <a href="https://render.com/privacy" target="_blank">Datenschutz</a></li>
+<li><strong>Cloudflare</strong> (USA) — Bot-Schutz. <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">Datenschutz</a></li>
+<li><strong>Upstash</strong> (USA) — Cache. <a href="https://upstash.com/privacy" target="_blank">Datenschutz</a></li>
 </ul>
-<p>Übermittlung in die USA erfolgt auf Basis von Standardvertragsklauseln (Art. 46 DSGVO).</p>
-
+<p>Übermittlung in die USA auf Basis von Standardvertragsklauseln (Art. 46 DSGVO).</p>
 <h2>4. Rechtsgrundlage</h2>
-<p>Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung) und Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse).</p>
-
+<p>Art. 6 Abs. 1 lit. b und f DSGVO.</p>
 <h2>5. Cookies</h2>
-<p>Wir verwenden keine Tracking-Cookies. Nur localStorage für Guthaben und Verlauf — lokal im Browser, für uns nicht einsehbar.</p>
-
+<p>Keine Tracking-Cookies. Nur localStorage für Guthaben und Verlauf — lokal, für uns nicht einsehbar.</p>
 <h2>6. Ihre Rechte</h2>
-<p>Auskunft, Berichtigung, Löschung, Einschränkung, Widerspruch. Lokale Daten: Browser-Cache löschen.
-Fragen: <span class="ph">[ihre@email.de]</span></p>
-<div class="footer">© 2026 AutoCheck AI · <a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a> · <a href="/agb">AGB</a></div>
-</div></body></html>
+<p>Auskunft, Berichtigung, Löschung, Widerspruch. Lokale Daten: Browser-Cache löschen.
+Kontakt: <span class="ph">[ihre@email.de]</span></p>
+</div>
+
+<div id="sec-en" class="lang-sec">
+<h1>Privacy Policy</h1><p class="sub">As of June 2026</p>
+<h2>1. Controller</h2>
+<p><span class="ph">[Name, Address]</span> · Email: <span class="ph">[your@email.de]</span></p>
+<h2>2. Data Processed</h2>
+<ul>
+<li><strong>IP address</strong> — for security and rate limiting. Max. 24 hours.</li>
+<li><strong>Vehicle data</strong> — sent for AI analysis, not stored permanently.</li>
+<li><strong>Credits and history</strong> — stored locally in your browser (localStorage) only. No server access.</li>
+</ul>
+<h2>3. Third Parties</h2>
+<ul>
+<li><strong>Anthropic</strong> (USA) — AI processing. <a href="https://www.anthropic.com/privacy" target="_blank">Privacy</a></li>
+<li><strong>Render</strong> (USA) — Hosting. <a href="https://render.com/privacy" target="_blank">Privacy</a></li>
+<li><strong>Cloudflare</strong> (USA) — Bot protection. <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">Privacy</a></li>
+<li><strong>Upstash</strong> (USA) — Cache. <a href="https://upstash.com/privacy" target="_blank">Privacy</a></li>
+</ul>
+<p>Transfer to USA based on Standard Contractual Clauses (Art. 46 GDPR).</p>
+<h2>4. Legal Basis</h2><p>Art. 6(1)(b) and (f) GDPR.</p>
+<h2>5. Cookies</h2>
+<p>No tracking cookies. Only localStorage for credits and history — local to your browser, not accessible by us.</p>
+<h2>6. Your Rights</h2>
+<p>Access, rectification, erasure, objection. Local data: clear browser cache.
+Contact: <span class="ph">[your@email.de]</span></p>
+</div>
+
+<div id="sec-ru" class="lang-sec">
+<h1>Политика конфиденциальности</h1><p class="sub">Редакция: июнь 2026</p>
+<h2>1. Ответственный</h2>
+<p><span class="ph">[Имя, адрес]</span> · Email: <span class="ph">[ваш@email.de]</span></p>
+<h2>2. Обрабатываемые данные</h2>
+<ul>
+<li><strong>IP-адрес</strong> — для безопасности и ограничения запросов. Макс. 24 часа.</li>
+<li><strong>Данные об автомобиле</strong> — передаются для AI-анализа, не хранятся постоянно.</li>
+<li><strong>Кредиты и история</strong> — хранятся только в браузере (localStorage). Сервер не имеет доступа.</li>
+</ul>
+<h2>3. Третьи стороны</h2>
+<ul>
+<li><strong>Anthropic</strong> (США) — AI-обработка. <a href="https://www.anthropic.com/privacy" target="_blank">Политика</a></li>
+<li><strong>Render</strong> (США) — хостинг. <a href="https://render.com/privacy" target="_blank">Политика</a></li>
+<li><strong>Cloudflare</strong> (США) — защита от ботов. <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">Политика</a></li>
+<li><strong>Upstash</strong> (США) — кэш. <a href="https://upstash.com/privacy" target="_blank">Политика</a></li>
+</ul>
+<p>Передача данных в США на основе Стандартных договорных положений (ст. 46 GDPR).</p>
+<h2>4. Правовая основа</h2><p>Ст. 6(1)(b) и (f) GDPR.</p>
+<h2>5. Cookies</h2>
+<p>Мы не используем отслеживающие cookie. Только localStorage для кредитов и истории — хранится локально в браузере.</p>
+<h2>6. Ваши права</h2>
+<p>Доступ, исправление, удаление, возражение. Локальные данные: очистите кэш браузера.
+Контакт: <span class="ph">[ваш@email.de]</span></p>
+</div>
+
+<div class="footer">
+  © 2026 AutoCheck AI ·
+  <a href="/impressum">Impressum</a>
+  <a href="/datenschutz">Datenschutz</a>
+  <a href="/agb">AGB</a>
+</div>
+</div>
+<script>
+function setLang(l){
+  document.querySelectorAll('.lang-sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('sec-'+l).classList.add('active');
+  document.querySelector('[data-l="'+l+'"]').classList.add('on');
+}
+// Auto-detect from main app localStorage
+try{const l=localStorage.getItem('ac_lang')||'de';setLang(l);}catch(e){setLang('de');}
+</script></body></html>
