@@ -842,7 +842,14 @@ function setCarStatus(state) {
   }
 }
 
-setLang('de');rebuildSelects();updateBadges();updateCreditsUI();loadFromHash();setTimeout(updateBadges,300);loadServerConfig();
+setLang('de');rebuildSelects();updateCreditsUI();loadFromHash();loadServerConfig();
+// Ensure badges show correct counts after full render
+[0,100,400,900].forEach(ms=>setTimeout(()=>{
+  const hb=document.getElementById('hbadge');
+  const cb=document.getElementById('cbadge');
+  if(hb)hb.textContent=history.length;
+  if(cb)cb.textContent=compareList.length;
+},ms));
 document.querySelectorAll('.nbadge').forEach(b=>{b.style.display='inline-flex';});
 </script>
 
