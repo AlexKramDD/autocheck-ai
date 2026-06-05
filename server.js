@@ -63,7 +63,7 @@ function getCacheKey(body) {
 // ── Turnstile verification ────────────────────────────────────────
 async function verifyTurnstile(token, ip) {
   if (!TURNSTILE_SECRET) return true; // not configured = skip
-  if (!token) return false;
+  if (!token) return true; // widget not loaded = allow through (rate limiter still protects)
   try {
     const form = new URLSearchParams();
     form.append('secret', TURNSTILE_SECRET);
