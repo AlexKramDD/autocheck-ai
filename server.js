@@ -179,6 +179,12 @@ app.get('/api/cache-stats', (req, res) => {
   res.json({ backend: UPSTASH_URL ? 'Redis' : 'Memory', memEntries: memCache.size });
 });
 
+
+// ── Legal pages ───────────────────────────────────────────────────
+app.get('/impressum',   (req, res) => res.sendFile(path.join(__dirname, 'public', 'impressum.html')));
+app.get('/datenschutz', (req, res) => res.sendFile(path.join(__dirname, 'public', 'datenschutz.html')));
+app.get('/agb',         (req, res) => res.sendFile(path.join(__dirname, 'public', 'agb.html')));
+
 app.get('*', (req, res) =>
   res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
