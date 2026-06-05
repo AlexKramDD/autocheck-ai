@@ -457,7 +457,24 @@ function renderResults(r,d){
   document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
   fetchLiveSources(currentFormData);
 }
-function doNew(){document.getElementById('results').innerHTML='';window.scrollTo({top:0,behavior:'smooth'});}
+function doNew(){
+  // Clear results
+  document.getElementById('results').innerHTML='';
+  // Clear form fields
+  ['f-make','f-model','f-year','f-mileage','f-notes'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  // Reset selects to default
+  ['f-body','f-engine','f-trans'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.selectedIndex=0;
+  });
+  // Reset car status and fetch cache
+  const cs=document.getElementById('car-status');if(cs)cs.style.display='none';
+  _lastFetched='';
+  currentResult=null;currentFormData=null;
+  showTab('analyse');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 function doShare(){const d=getForm();const enc=btoa(unescape(encodeURIComponent(JSON.stringify({make:d.make,model:d.model,year:d.year,mileage:d.mileage,body:d.body,engine:d.engine,trans:d.trans,price:d.price,notes:d.notes}))));const url=location.href.split('#')[0]+'#v='+enc;if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>showToast(t('toastCopy')));}else{prompt('Copy:',url);}}
 function loadFromHash(){const h=location.hash;if(!h.startsWith('#v='))return;try{const d=JSON.parse(decodeURIComponent(escape(atob(h.slice(3)))));fillForm(d);}catch(e){}}
 function pushHistory(desc,result,formData){const locale=lang==='de'?'de-DE':lang==='en'?'en-GB':'ru-RU';history.unshift({id:Date.now(),date:new Date().toLocaleString(locale,{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),desc,result,formData,lang});if(history.length>20)history.pop();try{localStorage.setItem('ac_hist',JSON.stringify(history));}catch(e){}}
