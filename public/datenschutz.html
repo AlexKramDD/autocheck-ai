@@ -1,76 +1,59 @@
 <!DOCTYPE html>
-<html lang="de">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Datenschutzerklärung — AutoCheck AI</title><style>
+<html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Datenschutz — AutoCheck AI</title><style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',Arial,sans-serif;background:#07090F;color:#E2E8F0;min-height:100vh;padding:0}
-.hdr{background:rgba(7,9,15,.95);border-bottom:1px solid rgba(255,255,255,.07);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0}
-.logo{font-family:Arial,sans-serif;font-size:18px;font-weight:900;color:#fff;text-decoration:none;letter-spacing:.02em}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#07090F;color:#E2E8F0;min-height:100vh}
+.hdr{background:rgba(7,9,15,.95);border-bottom:1px solid rgba(255,255,255,.07);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.logo{font-family:Arial,sans-serif;font-size:18px;font-weight:900;color:#fff;text-decoration:none}
 .logo span{color:#F59E0B}
-.back{color:#94A3B8;text-decoration:none;font-size:13px;display:flex;align-items:center;gap:6px}
+.back{color:#94A3B8;text-decoration:none;font-size:13px}
 .back:hover{color:#fff}
 .wrap{max-width:760px;margin:0 auto;padding:40px 24px 60px}
-h1{font-size:26px;font-weight:700;margin-bottom:8px;color:#fff}
-.updated{font-size:12px;color:#64748B;margin-bottom:32px}
-h2{font-size:16px;font-weight:600;margin:28px 0 10px;color:#E2E8F0;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.07)}
-p{font-size:14px;line-height:1.75;color:#94A3B8;margin-bottom:12px}
-ul{font-size:14px;line-height:1.75;color:#94A3B8;margin:8px 0 12px 20px}
-li{margin-bottom:4px}
+h1{font-size:26px;font-weight:700;margin-bottom:6px;color:#fff}
+.sub{font-size:12px;color:#64748B;margin-bottom:32px}
+h2{font-size:15px;font-weight:600;margin:28px 0 8px;color:#E2E8F0;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.07)}
+p,li{font-size:14px;line-height:1.75;color:#94A3B8;margin-bottom:10px}
+ul{margin:6px 0 12px 20px}
 a{color:#38BDF8}
-.placeholder{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:4px;padding:2px 8px;color:#F59E0B;font-size:13px}
-.footer{text-align:center;font-size:12px;color:#475569;margin-top:40px;padding-top:20px;border-top:1px solid rgba(255,255,255,.05)}
-</style></head>
-<body>
+.ph{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:4px;padding:1px 8px;color:#F59E0B;font-size:12px}
+.footer{text-align:center;font-size:11px;color:#475569;margin-top:40px;padding-top:16px;border-top:1px solid rgba(255,255,255,.05)}
+</style></head><body>
 <header class="hdr">
   <a class="logo" href="/">AutoCheck<span>AI</span></a>
   <a class="back" href="/">← zurück zur App</a>
 </header>
 <div class="wrap">
-  <h1>Datenschutzerklärung</h1>
-  <p class="updated">Stand: Juni 2026</p>
+<h1>Datenschutzerklärung</h1>
+<p class="sub">Stand: Juni 2026</p>
 
-  <h2>1. Verantwortlicher</h2>
-  <p><span class="placeholder">[Name und Anschrift — wie im Impressum]</span><br>
-  E-Mail: <span class="placeholder">[E-Mail-Adresse]</span></p>
+<h2>1. Verantwortlicher</h2>
+<p><span class="ph">[Name und Anschrift — wie im Impressum]</span><br>
+E-Mail: <span class="ph">[ihre@email.de]</span></p>
 
-  <h2>2. Welche Daten wir verarbeiten</h2>
-  <p>Beim Besuch von autocheckai.de werden folgende Daten verarbeitet:</p>
-  <ul>
-    <li><strong>IP-Adresse</strong> — automatisch durch den Server erfasst, für Sicherheit und Rate-Limiting. Speicherdauer: max. 24 Stunden in Server-Logs.</li>
-    <li><strong>Fahrzeugdaten aus dem Formular</strong> (Marke, Modell, Baujahr, Kilometerstand etc.) — zur Erstellung der KI-Analyse. Diese Daten werden nicht dauerhaft gespeichert.</li>
-    <li><strong>Guthaben und Analyseverlauf</strong> — werden ausschließlich lokal im Browser des Nutzers gespeichert (localStorage). Wir haben keinen Zugriff darauf.</li>
-  </ul>
+<h2>2. Verarbeitete Daten</h2>
+<ul>
+<li><strong>IP-Adresse</strong> — automatisch erfasst für Sicherheit und Rate-Limiting. Speicherdauer: max. 24 Stunden.</li>
+<li><strong>Fahrzeugdaten</strong> (Marke, Modell, Jahr etc.) — zur KI-Analyse übermittelt, nicht dauerhaft gespeichert.</li>
+<li><strong>Guthaben und Verlauf</strong> — nur lokal im Browser (localStorage). Kein Serverzugriff.</li>
+</ul>
 
-  <h2>3. Weitergabe an Dritte</h2>
-  <p>Zur Erbringung unseres Dienstes übermitteln wir Daten an folgende Drittanbieter:</p>
-  <ul>
-    <li><strong>Anthropic, Inc.</strong> (USA) — KI-Analyse. Die eingegebenen Fahrzeugdaten werden zur Verarbeitung übermittelt. Datenschutzerklärung: <a href="https://www.anthropic.com/privacy" target="_blank">anthropic.com/privacy</a></li>
-    <li><strong>Render Services, Inc.</strong> (USA) — Hosting. Verarbeitet IP-Adressen im Rahmen des Serverbetriebs. Datenschutzerklärung: <a href="https://render.com/privacy" target="_blank">render.com/privacy</a></li>
-    <li><strong>Cloudflare, Inc.</strong> (USA) — Bot-Schutz (Turnstile). Datenschutzerklärung: <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">cloudflare.com/privacypolicy</a></li>
-    <li><strong>Upstash, Inc.</strong> (USA) — Zwischenspeicherung von KI-Ergebnissen. Datenschutzerklärung: <a href="https://upstash.com/privacy" target="_blank">upstash.com/privacy</a></li>
-  </ul>
-  <p>Bei der Übermittlung in die USA stützen wir uns auf Standardvertragsklauseln (SCC) gemäß Art. 46 DSGVO.</p>
+<h2>3. Drittanbieter</h2>
+<ul>
+<li><strong>Anthropic, Inc.</strong> (USA) — KI-Verarbeitung. <a href="https://www.anthropic.com/privacy" target="_blank">Datenschutz</a></li>
+<li><strong>Render Services, Inc.</strong> (USA) — Hosting. <a href="https://render.com/privacy" target="_blank">Datenschutz</a></li>
+<li><strong>Cloudflare, Inc.</strong> (USA) — Bot-Schutz. <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">Datenschutz</a></li>
+<li><strong>Upstash, Inc.</strong> (USA) — Ergebnis-Cache. <a href="https://upstash.com/privacy" target="_blank">Datenschutz</a></li>
+</ul>
+<p>Übermittlung in die USA erfolgt auf Basis von Standardvertragsklauseln (Art. 46 DSGVO).</p>
 
-  <h2>4. Rechtsgrundlage</h2>
-  <p>Die Datenverarbeitung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung) 
-  für die Nutzung des Dienstes sowie Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse) 
-  für Sicherheit und Missbrauchsschutz.</p>
+<h2>4. Rechtsgrundlage</h2>
+<p>Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung) und Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse).</p>
 
-  <h2>5. Cookies und lokale Speicherung</h2>
-  <p>Wir verwenden keine Tracking-Cookies. Die Website nutzt ausschließlich den 
-  <strong>localStorage</strong> des Browsers zur Speicherung von Guthaben und Analyseverlauf. 
-  Diese Daten verbleiben auf dem Gerät des Nutzers und sind für uns nicht einsehbar.</p>
+<h2>5. Cookies</h2>
+<p>Wir verwenden keine Tracking-Cookies. Nur localStorage für Guthaben und Verlauf — lokal im Browser, für uns nicht einsehbar.</p>
 
-  <h2>6. Ihre Rechte</h2>
-  <p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, 
-  Datenübertragbarkeit sowie Widerspruch. Da wir keine personenbezogenen Daten dauerhaft 
-  speichern, können lokal gespeicherte Daten durch Löschen des Browser-Caches entfernt werden.</p>
-  <p>Bei Fragen wenden Sie sich an: <span class="placeholder">[E-Mail-Adresse]</span></p>
-
-  <h2>7. Beschwerderecht</h2>
-  <p>Sie haben das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren. 
-  Zuständig ist die Aufsichtsbehörde Ihres Bundeslandes.</p>
-
-  <div class="footer">© 2026 AutoCheck AI · <a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a> · <a href="/agb">AGB</a></div>
-</div>
-</body></html>
+<h2>6. Ihre Rechte</h2>
+<p>Auskunft, Berichtigung, Löschung, Einschränkung, Widerspruch. Lokale Daten: Browser-Cache löschen.
+Fragen: <span class="ph">[ihre@email.de]</span></p>
+<div class="footer">© 2026 AutoCheck AI · <a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a> · <a href="/agb">AGB</a></div>
+</div></body></html>
