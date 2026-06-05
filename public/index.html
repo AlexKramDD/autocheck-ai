@@ -458,22 +458,33 @@ function renderResults(r,d){
   fetchLiveSources(currentFormData);
 }
 function doNew(){
-  // Clear results
   document.getElementById('results').innerHTML='';
-  // Clear form fields
+  // Clear text inputs
   ['f-make','f-model','f-year','f-mileage','f-notes'].forEach(id=>{
-    const el=document.getElementById(id);if(el)el.value='';
+    const el=document.getElementById(id);if(el){el.value='';el.dispatchEvent(new Event('input'));}
   });
-  // Reset selects to default
-  ['f-body','f-engine','f-trans'].forEach(id=>{
-    const el=document.getElementById(id);if(el)el.selectedIndex=0;
-  });
-  // Reset car status and fetch cache
+  // Restore original select options (removes Haiku-generated ones)
+  const _f_body = document.getElementById('f-body');
+  if(_f_body) _f_body.innerHTML = `<option value="" data-i18n="oSel">— выбрать —</option>
+          <option value="sedan" data-i18n="oSedan">Седан</option><option value="hatch" data-i18n="oHatch">Хэтчбек</option>
+          <option value="estate" data-i18n="oEstate">Универсал</option><option value="suv" data-i18n="oSUV">Внедорожник / SUV</option>
+          <option value="coupe" data-i18n="oCoupe">Купе</option><option value="conv" data-i18n="oConv">Кабриолет</option>
+          <option value="van" data-i18n="oVan">Минивэн</option><option value="pickup" data-i18n="oPickup">Пикап</option>`;
+  const _f_engine = document.getElementById('f-engine');
+  if(_f_engine) _f_engine.innerHTML = `<option value="" data-i18n="oSel">— выбрать —</option>
+          <option value="petrol" data-i18n="oPetrol">Бензин</option><option value="diesel" data-i18n="oDiesel">Дизель</option>
+          <option value="hybrid" data-i18n="oHybrid">Гибрид (HEV)</option><option value="phev" data-i18n="oPHEV">PHEV</option>
+          <option value="ev" data-i18n="oEV">Электро</option><option value="lpg" data-i18n="oLPG">Газ (LPG)</option>`;
+  const _f_trans = document.getElementById('f-trans');
+  if(_f_trans) _f_trans.innerHTML = `<option value="" data-i18n="oSel">— выбрать —</option>
+          <option value="manual" data-i18n="oManual">Механика</option><option value="auto" data-i18n="oAuto">Автомат</option>
+          <option value="dsg" data-i18n="oDSG">DSG / Робот</option><option value="cvt" data-i18n="oCVT">Вариатор</option>`;
+  // Reset car status
   const cs=document.getElementById('car-status');if(cs)cs.style.display='none';
   _lastFetched='';
   currentResult=null;currentFormData=null;
   showTab('analyse');
-  window.scrollTo({top:0,behavior:'smooth'});
+  document.getElementById('pane-analyse').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function doShare(){const d=getForm();const enc=btoa(unescape(encodeURIComponent(JSON.stringify({make:d.make,model:d.model,year:d.year,mileage:d.mileage,body:d.body,engine:d.engine,trans:d.trans,price:d.price,notes:d.notes}))));const url=location.href.split('#')[0]+'#v='+enc;if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>showToast(t('toastCopy')));}else{prompt('Copy:',url);}}
 function loadFromHash(){const h=location.hash;if(!h.startsWith('#v='))return;try{const d=JSON.parse(decodeURIComponent(escape(atob(h.slice(3)))));fillForm(d);}catch(e){}}
