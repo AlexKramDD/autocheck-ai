@@ -365,6 +365,11 @@ try {
   }
 } catch(e) {}
 try{history=JSON.parse(localStorage.getItem('ac_hist')||'[]');}catch(e){history=[];}
+// Update badge immediately after loading history
+requestAnimationFrame(()=>{ requestAnimationFrame(()=>{
+  const hb=document.getElementById('hbadge');
+  if(hb)hb.textContent=history.length;
+}); });
 try{compareList=JSON.parse(sessionStorage.getItem('ac_cmp')||'[]');}catch(e){compareList=[];}
 try{
   const s=localStorage.getItem('ac_cr2');
@@ -844,6 +849,10 @@ function setCarStatus(state) {
 
 setLang('de');rebuildSelects();updateCreditsUI();loadFromHash();loadServerConfig();
 // Ensure badges show correct counts after full render
+window.addEventListener('load',()=>{
+  const hb=document.getElementById('hbadge');
+  if(hb)hb.textContent=history.length;
+});
 [0,100,400,900].forEach(ms=>setTimeout(()=>{
   const hb=document.getElementById('hbadge');
   const cb=document.getElementById('cbadge');
