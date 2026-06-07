@@ -180,6 +180,91 @@ app.get('/api/cache-stats', (req, res) => {
 });
 
 
+
+// ── Server-side prompt builder (hidden from client) ───────────────
+function buildDesc(d) {
+  const lang = d.lang || 'de';
+  const sep = {de:['Bj.','Tsd. km'],en:['year','tsd. km'],ru:['г.','тыс.км']};
+  const sv = sep[lang] || sep.de;
+  return [d.make, d.model,
+    d.year   ? `${sv[0]} ${d.year}`    : '',
+    d.mileage? `${d.mileage} ${sv[1]}` : '',
+    d.body, d.engine, d.trans, d.notes
+  ].filter(Boolean).join(', ');
+}
+
+function buildPrompt(desc, lang) {
+  const today    = new Date();
+  const todayStr = today.toISOString().split('T')[0];
+  const curYear  = today.getFullYear();
+
+  const role = {
+    ru: 'Ты — строгий эксперт по покупке подержанных автомобилей. Указывай только факты в которых абсолютно уверен. Если точно не знаешь — пропускай. Никогда не придумывай цифры, цены и статистику.',
+    de: 'Du bist ein strenger Gebrauchtwagen-Experte. Nenne nur Fakten die du sicher kennst. Unbekanntes weglassen. Erfinde niemals Zahlen, Preise oder Reparaturkosten.',
+    en: 'You are a strict used-car expert. Only state facts you are certain about. Omit anything uncertain. Never invent numbers, prices, mileage figures or repair costs.'
+  };
+  const dateNote = {
+    ru: `Сегодняшняя дата: ${todayStr}. Возраст авто рассчитывай от ${curYear} года.`,
+    de: `Heutiges Datum: ${todayStr}. Fahrzeugalter ab Jahr ${curYear} berechnen.`,
+    en: `Today's date: ${todayStr}. Calculate vehicle age from year ${curYear}.`
+  };
+  const cmd = {
+    ru: `Строго по-русски. ${dateNote.ru} Авто: ${desc}`,
+    de: `Nur Deutsch. ${dateNote.de} Fahrzeug: ${desc}`,
+    en: `English only. ${dateNote.en} Vehicle: ${desc}`
+  };
+
+  return `${role[lang]||role.de}\n\n${cmd[lang]||cmd.de}\n\nSTRICT RULES:\n1. NEVER invent specific numbers, mileage figures, repair costs or percentages\n2. Only describe problems genuinely documented for this exact model\n3. If unsure about a fact omit it or describe in general terms only\n4. First verify make+model is a real production car. If not, return ONLY: {"valid":false}\n\nReturn ONLY valid JSON, no markdown:\n{"valid":true,"riskLevel":"low"|"medium"|"high","riskSummary":"2 sentences, no invented numbers","knownIssues":[{"severity":"critical"|"warning"|"ok","title":"short","detail":"problem type only, no invented stats"}],"inspectionChecklist":[{"category":"name","items":["item"]}],"questionsForSeller":["q1","q2","q3","q4","q5","q6"],"redFlags":["f1","f2","f3"],"tip":"1 sentence based on real knowledge"}\nIf valid, return full JSON with "valid":true as first field.\nGive 5 knownIssues, 4 checklist categories (3 items each), 6 questions, 3 red flags.\nAll cost estimates MUST be in EUR (€). Be specific to this exact model.`;
+}
+
+// ── Car analysis endpoint (prompt hidden server-side) ─────────────
+app.post('/api/analyse-car', dailyLimiter, analysisLimiter, botGuard, async (req, res) => {
+  if (!API_KEY) return res.status(500).json({ error:{ message:'Server not configured.' }});
+
+  // Turnstile verification
+  const tsToken = req.headers['x-turnstile-token'];
+  const tsValid = await verifyTurnstile(tsToken, req.ip);
+  if (!tsValid) return res.status(403).json({ error:{ message:'Bot check failed.' }});
+
+  const d    = req.body;
+  const lang = d.lang || 'de';
+  const desc = buildDesc(d);
+  const cacheKey = 'ac:' + desc.toLowerCase().replace(/\s+/g,'_').slice(0,80);
+
+  // Check cache
+  const cached = await cacheGet(cacheKey);
+  if (cached) {
+    res.setHeader('X-Cache','HIT');
+    return res.json(cached);
+  }
+
+  try {
+    const prompt = buildPrompt(desc, lang);
+    const upstream = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 4000,
+        temperature: 0,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await upstream.json();
+    if (upstream.ok && data.content) {
+      await cacheSet(cacheKey, data);
+      res.setHeader('X-Cache','MISS');
+    }
+    res.status(upstream.status).json(data);
+  } catch(e) {
+    res.status(500).json({ error:{ message: e.message }});
+  }
+});
+
 // ── Legal pages ───────────────────────────────────────────────────
 app.get('/impressum',   (req, res) => res.sendFile(path.join(__dirname, 'public', 'impressum.html')));
 app.get('/datenschutz', (req, res) => res.sendFile(path.join(__dirname, 'public', 'datenschutz.html')));
