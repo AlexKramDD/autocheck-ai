@@ -118,7 +118,10 @@ function botGuard(req, res, next) {
   const ua = req.headers['user-agent'] || '';
   if (/^(curl|python-requests|go-http|wget|scrapy|libwww)/i.test(ua))
     return res.status(403).json({ error: { message: 'Automated requests not allowed.' } });
-  if (!req.body?.model || !req.body?.messages)
+  // Accept both: direct API format {model, messages} OR car form {make, ...}
+  const isApiFormat  = req.body?.model && req.body?.messages;
+  const isCarFormat  = req.body?.make !== undefined;
+  if (!isApiFormat && !isCarFormat)
     return res.status(400).json({ error: { message: 'Invalid request.' } });
   next();
 }
