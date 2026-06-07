@@ -430,7 +430,7 @@ async function doAnalyse(){
   const btn=document.getElementById('analyseBtn');btn.disabled=true;
   document.getElementById('results').innerHTML=`<div class="loading"><div class="spin-ring"></div><div class="loading-t">${t('loadMsg')}</div><div class="loading-s">${t('loadSub')}</div></div>`;
   try{
-    const res=await fetch('/api/analyse',{method:'POST',headers:{'Content-Type':'application/json','X-Turnstile-Token':turnstileToken||''},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:4000,temperature:0,messages:[{role:'user',content:buildPrompt(desc)}]})});
+    const res=await fetch('/api/analyse-car',{method:'POST',headers:{'Content-Type':'application/json','X-Turnstile-Token':turnstileToken||''},body:JSON.stringify({...d,lang})});
     if(res.status===429){document.getElementById('results').innerHTML=`<div class="rsec" style="border-color:rgba(245,158,11,.3);color:var(--amber);text-align:center;padding:24px">⏳ ${t('errRateLimit')}</div>`;btn.disabled=false;return;}if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||res.statusText);}
     const data=await res.json();
     const raw=data.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
