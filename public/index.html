@@ -376,6 +376,11 @@ try{
   if(s===null){credits=2;localStorage.setItem('ac_cr2','2');}
   else{const v=parseInt(s,10);credits=isNaN(v)?2:v;}
 }catch(e){credits=2;}
+// Update credits display after DOM is ready
+requestAnimationFrame(()=>{ requestAnimationFrame(()=>{
+  const el=document.getElementById('creditsNum');
+  if(el)el.textContent=credits;
+}); });
 
 function t(k){return(I[lang]||I.ru)[k]||k;}
 function saveCredits(){try{localStorage.setItem('ac_cr2',String(credits));}catch(e){}}
@@ -852,12 +857,16 @@ setLang('de');rebuildSelects();updateCreditsUI();loadFromHash();loadServerConfig
 window.addEventListener('load',()=>{
   const hb=document.getElementById('hbadge');
   if(hb)hb.textContent=history.length;
+  const cn=document.getElementById('creditsNum');
+  if(cn)cn.textContent=credits;
 });
 [0,100,400,900].forEach(ms=>setTimeout(()=>{
   const hb=document.getElementById('hbadge');
   const cb=document.getElementById('cbadge');
+  const cn=document.getElementById('creditsNum');
   if(hb)hb.textContent=history.length;
   if(cb)cb.textContent=compareList.length;
+  if(cn)cn.textContent=credits;
 },ms));
 document.querySelectorAll('.nbadge').forEach(b=>{b.style.display='inline-flex';});
 </script>
