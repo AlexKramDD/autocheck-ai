@@ -279,7 +279,7 @@ textarea{resize:vertical;min-height:62px}
       </div>
     </div>
     <div class="fg" style="margin-bottom:12px">
-      <div class="fld"><label data-i18n="lNotes">Дополнительно</label><input type="text" id="f-notes" data-i18n-ph="phNotes" placeholder="один владелец, полное ТО у дилера…"/></div>
+      <div class="fld"><label data-i18n="lNotes">Дополнительно</label><input type="text" id="f-notes" data-i18n-ph="phNotes" placeholder="один владелец, полное ТО у дилера…" maxlength="500" oninput="updateNotesCounter()"/><div id="notes-counter" style="font-size:11px;color:var(--text3);text-align:right;margin-top:3px;font-family:'JetBrains Mono',monospace">0 / 500</div></div>
     </div>
 
     <div id="turnstile-wrap" style="margin-bottom:8px"></div>
@@ -407,7 +407,7 @@ function rebuildSelects(keepValues=true){
   build('f-engine',engOpts);
   build('f-trans',trOpts);
 }
-function setLang(l){lang=l;try{localStorage.setItem('ac_lang',l);}catch(e){}document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('on'));document.querySelector(`.lbtn[onclick="setLang('${l}')"]`).classList.add('on');applyI18n();rebuildSelects();updateBadges();if(activeTab==='history')renderHistory();if(activeTab==='compare')renderCompare();if(currentResult&&currentFormData&&activeTab==='analyse')renderResults(currentResult,currentFormData);_lastFetched='';tryFetchCarData();}
+function setLang(l){lang=l;try{localStorage.setItem('ac_lang',l);}catch(e){}document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('on'));document.querySelector(`.lbtn[onclick="setLang('${l}')"]`).classList.add('on');applyI18n();rebuildSelects();updateBadges();if(activeTab==='history')renderHistory();if(activeTab==='compare')renderCompare();if(currentResult&&currentFormData&&activeTab==='analyse')renderResults(currentResult,currentFormData);_lastFetched='';updateNotesCounter();tryFetchCarData();}
 function applyI18n(){
   document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(el.tagName!=='INPUT'&&el.tagName!=='TEXTAREA')el.textContent=t(k);});
   document.querySelectorAll('[data-i18n-html]').forEach(el=>{el.innerHTML=t(el.getAttribute('data-i18n-html'));});
@@ -500,7 +500,7 @@ function doNew(){
   rebuildSelects(false);
   // Reset car status
   const cs=document.getElementById('car-status');if(cs)cs.style.display='none';
-  _lastFetched='';
+  _lastFetched='';updateNotesCounter();
   currentResult=null;currentFormData=null;
   showTab('analyse');
   document.getElementById('pane-analyse').scrollIntoView({behavior:'smooth',block:'start'});
@@ -769,6 +769,15 @@ async function loadServerConfig() {
     const cfg = await res.json();
     if (cfg.turnstileSiteKey) initTurnstile(cfg.turnstileSiteKey);
   } catch(e) {}
+}
+
+function updateNotesCounter(){
+  const el=document.getElementById('f-notes');
+  const cnt=document.getElementById('notes-counter');
+  if(!el||!cnt)return;
+  const len=el.value.length;
+  cnt.textContent=len+' / 500';
+  cnt.style.color=len>450?'var(--amber)':len>=500?'var(--red)':'var(--text3)';
 }
 function showToast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2700);}
 
