@@ -4,11 +4,10 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#07090F;color:#E2E8F0;min-height:100vh}
 .hdr{background:rgba(7,9,15,.95);border-bottom:1px solid rgba(255,255,255,.07);padding:0 20px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
-.logo{font-family:Arial,sans-serif;font-size:18px;font-weight:900;color:#fff;text-decoration:none;letter-spacing:.02em}
+.logo{font-family:Arial,sans-serif;font-size:18px;font-weight:900;color:#fff;text-decoration:none}
 .logo span{color:#F59E0B}
 .hdr-right{display:flex;align-items:center;gap:12px}
 .back{color:#94A3B8;text-decoration:none;font-size:13px}
-.back:hover{color:#fff}
 .lang-sw{display:flex;gap:4px}
 .lbtn{background:none;border:1px solid rgba(255,255,255,.12);color:#94A3B8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;cursor:pointer;letter-spacing:.06em}
 .lbtn.on{background:#F59E0B;border-color:#F59E0B;color:#000}
@@ -34,89 +33,75 @@ a{color:#38BDF8}
       <button class="lbtn on" data-l="de" onclick="setLang('de')">DE</button>
       <button class="lbtn" data-l="en" onclick="setLang('en')">EN</button>
       <button class="lbtn" data-l="ru" onclick="setLang('ru')">RU</button>
+      <button class="lbtn" data-l="uk" onclick="setLang('uk')">UA</button>
     </div>
-    <a class="back" href="/" id="back-link">← zurück</a>
+    <a class="back" href="/">← zurück</a>
   </div>
 </header>
 <div class="wrap">
 
 <div id="sec-de" class="lang-sec">
 <h1>Datenschutzerklärung</h1><p class="sub">Stand: Juni 2026</p>
-<h2>1. Verantwortlicher</h2>
-<p><span class="ph">[Name, Anschrift]</span> · E-Mail: <span class="ph">[ihre@email.de]</span></p>
+<h2>1. Verantwortlicher</h2><p><span class="ph">[Name, Anschrift]</span> · E-Mail: <span class="ph">[ihre@email.de]</span></p>
 <h2>2. Verarbeitete Daten</h2>
-<ul>
-<li><strong>IP-Adresse</strong> — für Sicherheit und Rate-Limiting. Max. 24 Stunden.</li>
+<ul><li><strong>IP-Adresse</strong> — für Sicherheit und Rate-Limiting. Max. 24 Stunden.</li>
 <li><strong>Fahrzeugdaten</strong> — zur KI-Analyse übermittelt, nicht dauerhaft gespeichert.</li>
-<li><strong>Guthaben und Verlauf</strong> — nur lokal im Browser (localStorage). Kein Serverzugriff.</li>
-</ul>
+<li><strong>Guthaben und Verlauf</strong> — nur lokal im Browser (localStorage).</li></ul>
 <h2>3. Drittanbieter</h2>
-<ul>
-<li><strong>Anthropic</strong> (USA) — KI-Verarbeitung. <a href="https://www.anthropic.com/privacy" target="_blank">Datenschutz</a></li>
+<ul><li><strong>Anthropic</strong> (USA) — KI-Verarbeitung. <a href="https://www.anthropic.com/privacy" target="_blank">Datenschutz</a></li>
 <li><strong>Render</strong> (USA) — Hosting. <a href="https://render.com/privacy" target="_blank">Datenschutz</a></li>
 <li><strong>Cloudflare</strong> (USA) — Bot-Schutz. <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">Datenschutz</a></li>
-<li><strong>Upstash</strong> (USA) — Cache. <a href="https://upstash.com/privacy" target="_blank">Datenschutz</a></li>
-</ul>
-<p>Übermittlung in die USA auf Basis von Standardvertragsklauseln (Art. 46 DSGVO).</p>
-<h2>4. Rechtsgrundlage</h2>
-<p>Art. 6 Abs. 1 lit. b und f DSGVO.</p>
-<h2>5. Cookies</h2>
-<p>Keine Tracking-Cookies. Nur localStorage für Guthaben und Verlauf — lokal, für uns nicht einsehbar.</p>
-<h2>6. Ihre Rechte</h2>
-<p>Auskunft, Berichtigung, Löschung, Widerspruch. Lokale Daten: Browser-Cache löschen.
-Kontakt: <span class="ph">[ihre@email.de]</span></p>
+<li><strong>Upstash</strong> (USA) — Cache. <a href="https://upstash.com/privacy" target="_blank">Datenschutz</a></li></ul>
+<h2>4. Rechtsgrundlage</h2><p>Art. 6 Abs. 1 lit. b und f DSGVO.</p>
+<h2>5. Ihre Rechte</h2><p>Auskunft, Berichtigung, Löschung, Widerspruch. Kontakt: <span class="ph">[ihre@email.de]</span></p>
 </div>
 
 <div id="sec-en" class="lang-sec">
 <h1>Privacy Policy</h1><p class="sub">As of June 2026</p>
-<h2>1. Controller</h2>
-<p><span class="ph">[Name, Address]</span> · Email: <span class="ph">[your@email.de]</span></p>
+<h2>1. Controller</h2><p><span class="ph">[Name, Address]</span> · Email: <span class="ph">[your@email.de]</span></p>
 <h2>2. Data Processed</h2>
-<ul>
-<li><strong>IP address</strong> — for security and rate limiting. Max. 24 hours.</li>
+<ul><li><strong>IP address</strong> — for security and rate limiting. Max. 24 hours.</li>
 <li><strong>Vehicle data</strong> — sent for AI analysis, not stored permanently.</li>
-<li><strong>Credits and history</strong> — stored locally in your browser (localStorage) only. No server access.</li>
-</ul>
+<li><strong>Credits and history</strong> — stored locally in your browser only.</li></ul>
 <h2>3. Third Parties</h2>
-<ul>
-<li><strong>Anthropic</strong> (USA) — AI processing. <a href="https://www.anthropic.com/privacy" target="_blank">Privacy</a></li>
+<ul><li><strong>Anthropic</strong> (USA) — AI processing. <a href="https://www.anthropic.com/privacy" target="_blank">Privacy</a></li>
 <li><strong>Render</strong> (USA) — Hosting. <a href="https://render.com/privacy" target="_blank">Privacy</a></li>
 <li><strong>Cloudflare</strong> (USA) — Bot protection. <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">Privacy</a></li>
-<li><strong>Upstash</strong> (USA) — Cache. <a href="https://upstash.com/privacy" target="_blank">Privacy</a></li>
-</ul>
-<p>Transfer to USA based on Standard Contractual Clauses (Art. 46 GDPR).</p>
+<li><strong>Upstash</strong> (USA) — Cache. <a href="https://upstash.com/privacy" target="_blank">Privacy</a></li></ul>
 <h2>4. Legal Basis</h2><p>Art. 6(1)(b) and (f) GDPR.</p>
-<h2>5. Cookies</h2>
-<p>No tracking cookies. Only localStorage for credits and history — local to your browser, not accessible by us.</p>
-<h2>6. Your Rights</h2>
-<p>Access, rectification, erasure, objection. Local data: clear browser cache.
-Contact: <span class="ph">[your@email.de]</span></p>
+<h2>5. Your Rights</h2><p>Access, rectification, erasure, objection. Contact: <span class="ph">[your@email.de]</span></p>
 </div>
 
 <div id="sec-ru" class="lang-sec">
 <h1>Политика конфиденциальности</h1><p class="sub">Редакция: июнь 2026</p>
-<h2>1. Ответственный</h2>
-<p><span class="ph">[Имя, адрес]</span> · Email: <span class="ph">[ваш@email.de]</span></p>
+<h2>1. Ответственный</h2><p><span class="ph">[Имя, адрес]</span> · Email: <span class="ph">[ваш@email.de]</span></p>
 <h2>2. Обрабатываемые данные</h2>
-<ul>
-<li><strong>IP-адрес</strong> — для безопасности и ограничения запросов. Макс. 24 часа.</li>
+<ul><li><strong>IP-адрес</strong> — для безопасности. Макс. 24 часа.</li>
 <li><strong>Данные об автомобиле</strong> — передаются для AI-анализа, не хранятся постоянно.</li>
-<li><strong>Кредиты и история</strong> — хранятся только в браузере (localStorage). Сервер не имеет доступа.</li>
-</ul>
+<li><strong>Кредиты и история</strong> — только в браузере (localStorage).</li></ul>
 <h2>3. Третьи стороны</h2>
-<ul>
-<li><strong>Anthropic</strong> (США) — AI-обработка. <a href="https://www.anthropic.com/privacy" target="_blank">Политика</a></li>
-<li><strong>Render</strong> (США) — хостинг. <a href="https://render.com/privacy" target="_blank">Политика</a></li>
-<li><strong>Cloudflare</strong> (США) — защита от ботов. <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">Политика</a></li>
-<li><strong>Upstash</strong> (США) — кэш. <a href="https://upstash.com/privacy" target="_blank">Политика</a></li>
-</ul>
-<p>Передача данных в США на основе Стандартных договорных положений (ст. 46 GDPR).</p>
+<ul><li><strong>Anthropic</strong> (США) — AI-обработка. <a href="https://www.anthropic.com/privacy" target="_blank">Политика</a></li>
+<li><strong>Render</strong> (США) — хостинг.</li>
+<li><strong>Cloudflare</strong> (США) — защита от ботов.</li>
+<li><strong>Upstash</strong> (США) — кэш.</li></ul>
 <h2>4. Правовая основа</h2><p>Ст. 6(1)(b) и (f) GDPR.</p>
-<h2>5. Cookies</h2>
-<p>Мы не используем отслеживающие cookie. Только localStorage для кредитов и истории — хранится локально в браузере.</p>
-<h2>6. Ваши права</h2>
-<p>Доступ, исправление, удаление, возражение. Локальные данные: очистите кэш браузера.
-Контакт: <span class="ph">[ваш@email.de]</span></p>
+<h2>5. Ваши права</h2><p>Доступ, исправление, удаление, возражение. Контакт: <span class="ph">[ваш@email.de]</span></p>
+</div>
+
+<div id="sec-uk" class="lang-sec">
+<h1>Політика конфіденційності</h1><p class="sub">Редакція: червень 2026</p>
+<h2>1. Відповідальний</h2><p><span class="ph">[Ім'я, адреса]</span> · Email: <span class="ph">[ваш@email.de]</span></p>
+<h2>2. Оброблювані дані</h2>
+<ul><li><strong>IP-адреса</strong> — для безпеки. Макс. 24 години.</li>
+<li><strong>Дані про автомобіль</strong> — передаються для AI-аналізу, не зберігаються постійно.</li>
+<li><strong>Кредити та історія</strong> — лише в браузері (localStorage).</li></ul>
+<h2>3. Треті сторони</h2>
+<ul><li><strong>Anthropic</strong> (США) — AI-обробка. <a href="https://www.anthropic.com/privacy" target="_blank">Політика</a></li>
+<li><strong>Render</strong> (США) — хостинг.</li>
+<li><strong>Cloudflare</strong> (США) — захист від ботів.</li>
+<li><strong>Upstash</strong> (США) — кеш.</li></ul>
+<h2>4. Правова основа</h2><p>Ст. 6(1)(b) та (f) GDPR.</p>
+<h2>5. Ваші права</h2><p>Доступ, виправлення, видалення, заперечення. Контакт: <span class="ph">[ваш@email.de]</span></p>
 </div>
 
 <div class="footer">
@@ -133,6 +118,5 @@ function setLang(l){
   document.getElementById('sec-'+l).classList.add('active');
   document.querySelector('[data-l="'+l+'"]').classList.add('on');
 }
-// Auto-detect from main app localStorage
-try{const l=localStorage.getItem('ac_lang')||'de';setLang(l);}catch(e){setLang('de');}
+try{const l=localStorage.getItem('ac_lang')||'de';setLang(['de','en','ru','uk'].includes(l)?l:'de');}catch(e){setLang('de');}
 </script></body></html>

@@ -4,11 +4,10 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#07090F;color:#E2E8F0;min-height:100vh}
 .hdr{background:rgba(7,9,15,.95);border-bottom:1px solid rgba(255,255,255,.07);padding:0 20px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
-.logo{font-family:Arial,sans-serif;font-size:18px;font-weight:900;color:#fff;text-decoration:none;letter-spacing:.02em}
+.logo{font-family:Arial,sans-serif;font-size:18px;font-weight:900;color:#fff;text-decoration:none}
 .logo span{color:#F59E0B}
 .hdr-right{display:flex;align-items:center;gap:12px}
 .back{color:#94A3B8;text-decoration:none;font-size:13px}
-.back:hover{color:#fff}
 .lang-sw{display:flex;gap:4px}
 .lbtn{background:none;border:1px solid rgba(255,255,255,.12);color:#94A3B8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;cursor:pointer;letter-spacing:.06em}
 .lbtn.on{background:#F59E0B;border-color:#F59E0B;color:#000}
@@ -34,79 +33,51 @@ a{color:#38BDF8}
       <button class="lbtn on" data-l="de" onclick="setLang('de')">DE</button>
       <button class="lbtn" data-l="en" onclick="setLang('en')">EN</button>
       <button class="lbtn" data-l="ru" onclick="setLang('ru')">RU</button>
+      <button class="lbtn" data-l="uk" onclick="setLang('uk')">UA</button>
     </div>
-    <a class="back" href="/" id="back-link">← zurück</a>
+    <a class="back" href="/">← zurück</a>
   </div>
 </header>
 <div class="wrap">
 
 <div id="sec-de" class="lang-sec">
 <h1>Allgemeine Geschäftsbedingungen</h1><p class="sub">Stand: Juni 2026</p>
-<h2>1. Anbieter</h2>
-<p>AutoCheck AI, betrieben von <span class="ph">[Name, Anschrift]</span>. Mit der Nutzung akzeptieren Sie diese AGB.</p>
-<h2>2. Leistung</h2>
-<p>AutoCheck AI erstellt KI-gestützte Analysen zu Gebrauchtfahrzeugen. Die Analysen sind unverbindlich
-und ersetzen keine professionelle Fahrzeugprüfung.</p>
-<h2>3. Guthaben</h2>
-<ul>
-<li>Neue Nutzer erhalten 2 kostenlose Analysen.</li>
-<li>Gekauftes Guthaben ist nicht übertragbar und nicht erstattungsfähig (außer bei technischem Fehler).</li>
-<li>Guthaben wird lokal im Browser gespeichert — kein Ersatz bei Verlust durch Cache-Löschen.</li>
-</ul>
-<h2>4. Haftung</h2>
-<p>Keine Haftung für Kaufentscheidungen auf Basis der Analysen. Haftung nur bei Vorsatz und grober Fahrlässigkeit.</p>
-<h2>5. Nutzungsverbote</h2>
-<p>Automatisierte Anfragen (Bots), Umgehung von Sicherheitsmechanismen und Weiterverkauf sind untersagt.</p>
-<h2>6. Änderungen</h2>
-<p>Änderungen der AGB und Preise mit angemessener Vorankündigung. Bestehendes Guthaben bleibt erhalten.</p>
-<h2>7. Anwendbares Recht</h2>
-<p>Deutsches Recht. Gerichtsstand: <span class="ph">[Ihr Wohnort]</span>.</p>
+<h2>1. Anbieter</h2><p>AutoCheck AI, betrieben von <span class="ph">[Name, Anschrift]</span>.</p>
+<h2>2. Leistung</h2><p>KI-gestützte Analysen zu Gebrauchtfahrzeugen. Unverbindlich, kein Ersatz für professionelle Prüfung.</p>
+<h2>3. Guthaben</h2><ul><li>2 kostenlose Analysen für neue Nutzer.</li><li>Gekauftes Guthaben nicht erstattungsfähig.</li><li>Guthaben lokal im Browser — kein Ersatz bei Verlust.</li></ul>
+<h2>4. Haftung</h2><p>Keine Haftung für Kaufentscheidungen. Nur bei Vorsatz und grober Fahrlässigkeit.</p>
+<h2>5. Verbote</h2><p>Bots, Umgehung von Sicherheitsmechanismen und Weiterverkauf sind untersagt.</p>
+<h2>6. Anwendbares Recht</h2><p>Deutsches Recht. Gerichtsstand: <span class="ph">[Ihr Wohnort]</span>.</p>
 </div>
 
 <div id="sec-en" class="lang-sec">
 <h1>Terms of Service</h1><p class="sub">As of June 2026</p>
-<h2>1. Provider</h2>
-<p>AutoCheck AI, operated by <span class="ph">[Name, Address]</span>. By using the service you accept these terms.</p>
-<h2>2. Service</h2>
-<p>AutoCheck AI provides AI-generated analyses of used vehicles. Analyses are for informational purposes
-only and do not replace a professional vehicle inspection.</p>
-<h2>3. Credits</h2>
-<ul>
-<li>New users receive 2 free analyses.</li>
-<li>Purchased credits are non-transferable and non-refundable (except in case of technical error).</li>
-<li>Credits are stored in the browser — no replacement if lost by clearing the cache.</li>
-</ul>
-<h2>4. Liability</h2>
-<p>No liability for purchase decisions based on analyses. Liability only for intent and gross negligence.</p>
-<h2>5. Prohibited Use</h2>
-<p>Automated requests (bots), circumventing security mechanisms and resale are prohibited.</p>
-<h2>6. Changes</h2>
-<p>Changes to terms and prices with reasonable notice. Existing credits remain valid.</p>
-<h2>7. Governing Law</h2>
-<p>German law applies. Place of jurisdiction: <span class="ph">[Your city]</span>.</p>
+<h2>1. Provider</h2><p>AutoCheck AI, operated by <span class="ph">[Name, Address]</span>.</p>
+<h2>2. Service</h2><p>AI-generated analyses of used vehicles. For information only, not a substitute for professional inspection.</p>
+<h2>3. Credits</h2><ul><li>2 free analyses for new users.</li><li>Purchased credits are non-refundable.</li><li>Credits stored in browser — no replacement if lost.</li></ul>
+<h2>4. Liability</h2><p>No liability for purchase decisions. Only for intent and gross negligence.</p>
+<h2>5. Prohibited Use</h2><p>Bots, circumventing security and resale are prohibited.</p>
+<h2>6. Governing Law</h2><p>German law. Jurisdiction: <span class="ph">[Your city]</span>.</p>
 </div>
 
 <div id="sec-ru" class="lang-sec">
 <h1>Условия использования</h1><p class="sub">Редакция: июнь 2026</p>
-<h2>1. Провайдер</h2>
-<p>AutoCheck AI, управляется <span class="ph">[Имя, адрес]</span>. Используя сервис, вы принимаете эти условия.</p>
-<h2>2. Услуга</h2>
-<p>AutoCheck AI предоставляет AI-анализы подержанных автомобилей. Анализы носят информационный характер
-и не заменяют профессиональный осмотр.</p>
-<h2>3. Кредиты</h2>
-<ul>
-<li>Новые пользователи получают 2 бесплатных анализа.</li>
-<li>Купленные кредиты не передаются и не возвращаются (кроме технических ошибок).</li>
-<li>Кредиты хранятся в браузере — замена при потере из-за очистки кэша не предусмотрена.</li>
-</ul>
-<h2>4. Ответственность</h2>
-<p>Ответственности за решения о покупке на основе анализов нет. Ответственность только при умысле и грубой халатности.</p>
-<h2>5. Запреты</h2>
-<p>Автоматические запросы (боты), обход защиты и перепродажа запрещены.</p>
-<h2>6. Изменения</h2>
-<p>Изменения условий и цен с разумным уведомлением. Имеющиеся кредиты сохраняются.</p>
-<h2>7. Применимое право</h2>
-<p>Немецкое право. Место юрисдикции: <span class="ph">[ваш город]</span>.</p>
+<h2>1. Провайдер</h2><p>AutoCheck AI, управляется <span class="ph">[Имя, адрес]</span>.</p>
+<h2>2. Услуга</h2><p>AI-анализы подержанных автомобилей. Носят информационный характер.</p>
+<h2>3. Кредиты</h2><ul><li>2 бесплатных анализа для новых пользователей.</li><li>Купленные кредиты не возвращаются.</li><li>Хранятся в браузере — замена не предусмотрена.</li></ul>
+<h2>4. Ответственность</h2><p>Нет ответственности за решения о покупке.</p>
+<h2>5. Запреты</h2><p>Боты, обход защиты и перепродажа запрещены.</p>
+<h2>6. Применимое право</h2><p>Немецкое право. Юрисдикция: <span class="ph">[ваш город]</span>.</p>
+</div>
+
+<div id="sec-uk" class="lang-sec">
+<h1>Умови використання</h1><p class="sub">Редакція: червень 2026</p>
+<h2>1. Провайдер</h2><p>AutoCheck AI, управляється <span class="ph">[Ім'я, адреса]</span>.</p>
+<h2>2. Послуга</h2><p>AI-аналізи вживаних автомобілів. Мають інформаційний характер.</p>
+<h2>3. Кредити</h2><ul><li>2 безкоштовних аналізи для нових користувачів.</li><li>Куплені кредити не повертаються.</li><li>Зберігаються в браузері — заміна не передбачена.</li></ul>
+<h2>4. Відповідальність</h2><p>Немає відповідальності за рішення про купівлю.</p>
+<h2>5. Заборони</h2><p>Боти, обхід захисту та перепродаж заборонені.</p>
+<h2>6. Застосовне право</h2><p>Німецьке право. Юрисдикція: <span class="ph">[ваше місто]</span>.</p>
 </div>
 
 <div class="footer">
@@ -123,6 +94,5 @@ function setLang(l){
   document.getElementById('sec-'+l).classList.add('active');
   document.querySelector('[data-l="'+l+'"]').classList.add('on');
 }
-// Auto-detect from main app localStorage
-try{const l=localStorage.getItem('ac_lang')||'de';setLang(l);}catch(e){setLang('de');}
+try{const l=localStorage.getItem('ac_lang')||'de';setLang(['de','en','ru','uk'].includes(l)?l:'de');}catch(e){setLang('de');}
 </script></body></html>
