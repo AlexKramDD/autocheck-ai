@@ -204,17 +204,20 @@ function buildPrompt(desc, lang) {
   const role = {
     ru: 'Ты — строгий эксперт по покупке подержанных автомобилей. Указывай только факты в которых абсолютно уверен. Если точно не знаешь — пропускай. Никогда не придумывай цифры, цены и статистику.',
     de: 'Du bist ein strenger Gebrauchtwagen-Experte. Nenne nur Fakten die du sicher kennst. Unbekanntes weglassen. Erfinde niemals Zahlen, Preise oder Reparaturkosten.',
-    en: 'You are a strict used-car expert. Only state facts you are certain about. Omit anything uncertain. Never invent numbers, prices, mileage figures or repair costs.'
+    en: 'You are a strict used-car expert. Only state facts you are certain about. Omit anything uncertain. Never invent numbers, prices, mileage figures or repair costs.',
+    uk: 'Ти — суворий експерт з купівлі вживаних автомобілів. Вказуй лише факти в яких абсолютно впевнений. Якщо точно не знаєш — пропускай. Ніколи не вигадуй цифри, ціни та статистику.'
   };
   const dateNote = {
     ru: `Сегодняшняя дата: ${todayStr}. Возраст авто рассчитывай от ${curYear} года.`,
     de: `Heutiges Datum: ${todayStr}. Fahrzeugalter ab Jahr ${curYear} berechnen.`,
-    en: `Today's date: ${todayStr}. Calculate vehicle age from year ${curYear}.`
+    en: `Today's date: ${todayStr}. Calculate vehicle age from year ${curYear}.`,
+    uk: `Сьогоднішня дата: ${todayStr}. Вік авто розраховуй від ${curYear} року.`
   };
   const cmd = {
     ru: `Строго по-русски. ${dateNote.ru} Авто: ${desc}`,
     de: `Nur Deutsch. ${dateNote.de} Fahrzeug: ${desc}`,
-    en: `English only. ${dateNote.en} Vehicle: ${desc}`
+    en: `English only. ${dateNote.en} Vehicle: ${desc}`,
+    uk: `Строго українською мовою. ${dateNote.uk} Авто: ${desc}`
   };
 
   return `${role[lang]||role.de}\n\n${cmd[lang]||cmd.de}\n\nSTRICT RULES:\n1. NEVER invent specific numbers, mileage figures, repair costs or percentages\n2. Only describe problems genuinely documented for this exact model\n3. If unsure about a fact omit it or describe in general terms only\n4. First verify make+model is a real production car. If not, return ONLY: {"valid":false}\n\nReturn ONLY valid JSON, no markdown:\n{"valid":true,"riskLevel":"low"|"medium"|"high","riskSummary":"2 sentences, no invented numbers","knownIssues":[{"severity":"critical"|"warning"|"ok","title":"short","detail":"problem type only, no invented stats"}],"inspectionChecklist":[{"category":"name","items":["item"]}],"questionsForSeller":["q1","q2","q3","q4","q5","q6"],"redFlags":["f1","f2","f3"],"tip":"1 sentence based on real knowledge"}\nIf valid, return full JSON with "valid":true as first field.\nGive 5 knownIssues, 4 checklist categories (3 items each), 6 questions, 3 red flags.\nAll cost estimates MUST be in EUR (€). Be specific to this exact model.`;
