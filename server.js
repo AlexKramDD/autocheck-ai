@@ -5,6 +5,16 @@ const path       = require('path');
 
 const app = express();
 app.set('trust proxy', 1);
+
+// ── Security headers ──────────────────────────────────────────────
+app.use((req, res, next) => {
+  res.setHeader('X-Frame-Options', 'DENY');              // clickjacking protection
+  res.setHeader('X-Content-Type-Options', 'nosniff');    // MIME sniffing protection
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  next();
+});
+
 app.use(express.json({ limit: '2mb' }));
 
 // ── Basic Auth (temporary protection) ────────────────────────────
