@@ -473,7 +473,7 @@ urlLoad:'Завантажую…',urlOk:'Дані завантажено',urlErr
 }
 };
 
-let lang='de',apiKey='',apiVisible=true;
+let lang='de',apiKey='';
 let currentResult=null,currentFormData=null,currentDesc='';
 let credits=0,history=[],compareList=[];let activeTab='analyse';
 
@@ -532,49 +532,6 @@ function applyI18n(){
   document.querySelectorAll('[data-i18n-ph]').forEach(el=>{el.placeholder=t(el.getAttribute('data-i18n-ph'));});
   document.querySelectorAll('[data-i18n-title]').forEach(el=>{el.title=t(el.getAttribute('data-i18n-title'));});
   document.querySelectorAll('option[data-i18n]').forEach(el=>{el.textContent=t(el.getAttribute('data-i18n'));});
-  refreshApiStatus();document.getElementById('apiToggle').textContent=apiVisible?t('apiHide'):t('apiShow');
-}
-function saveKey(){const v=document.getElementById('apiInput').value.trim();if(!v.startsWith('sk-ant')){showToast('⚠ '+t('apiErr'));return;}apiKey=v;refreshApiStatus();}
-function refreshApiStatus(){const el=document.getElementById('apiStatus');if(apiKey){el.className='api-status ok';el.innerHTML=`<span>●</span><span>${t('apiSaved')}</span>`;}else{el.className='api-status no';el.innerHTML=`<span>○</span><span>${t('apiNotSet')}</span>`;}}
-function toggleApi(){apiVisible=!apiVisible;document.getElementById('apiBody').style.display=apiVisible?'':'none';document.getElementById('apiToggle').textContent=apiVisible?t('apiHide'):t('apiShow');}
-function showTab(tab){activeTab=tab;document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));document.getElementById('pane-'+tab).classList.add('on');document.getElementById('ntab-'+tab).classList.add('on');updateBadges();if(tab==='history')renderHistory();if(tab==='compare')renderCompare();}
-function updateBadges(){document.getElementById('hbadge').textContent=history.length;document.getElementById('cbadge').textContent=compareList.length;}
-function getForm(){return{make:document.getElementById('f-make').value.trim(),model:document.getElementById('f-model').value.trim(),year:document.getElementById('f-year').value.trim(),mileage:document.getElementById('f-mileage').value.trim(),body:document.getElementById('f-body').value,bodyTxt:document.getElementById('f-body').selectedOptions[0]?.textContent||'',engine:document.getElementById('f-engine').value,engineTxt:document.getElementById('f-engine').selectedOptions[0]?.textContent||'',trans:document.getElementById('f-trans').value,transTxt:document.getElementById('f-trans').selectedOptions[0]?.textContent||'',notes:document.getElementById('f-notes').value.trim()};}
-function fillForm(d){['make','model','year','mileage','body','engine','trans','notes'].forEach(k=>{const el=document.getElementById('f-'+k);if(el&&d[k]!==undefined)el.value=d[k];});}
-function buildDesc(d){const sep=lang==='de'?['Bj.','Tsd.km','Preis']:lang==='en'?['','k km','price']:lang==='uk'?['р.','тис.км','ціна']:['г.','тыс.км','цена'];return[d.make,d.model,d.year?`${sep[0]} ${d.year}`.trim():'',d.mileage?`${d.mileage} ${sep[1]}`:'',d.bodyTxt,d.engineTxt,d.transTxt,d.notes].filter(Boolean).join(', ');}
-function buildPrompt(desc){const role={ru:'Ты — строгий эксперт по покупке подержанных автомобилей. Указывай только факты в которых абсолютно уверен. Если точно не знаешь — пропускай. Никогда не придумывай цифры, цены и статистику.',de:'Du bist ein strenger Gebrauchtwagen-Experte. Nenne nur Fakten die du sicher kennst. Unbekanntes weglassen. Erfinde niemals Zahlen, Preise oder Reparaturkosten.',en:'You are a strict used-car expert. Only state facts you are certain about. Omit anything uncertain. Never invent numbers, prices, mileage figures or repair costs.'};const today=new Date();const todayStr=today.toISOString().split('T')[0];const curYear=today.getFullYear();const dateNote={ru:`Сегодняшняя дата: ${todayStr}. Возраст авто рассчитывай от ${curYear} года.`,de:`Heutiges Datum: ${todayStr}. Fahrzeugalter ab Jahr ${curYear} berechnen.`,en:`Today's date: ${todayStr}. Calculate vehicle age from year ${curYear}.`};const cmd={ru:`Строго по-русски. ${dateNote.ru} Авто: ${desc}`,de:`Nur Deutsch. ${dateNote.de} Fahrzeug: ${desc}`,en:`English only. ${dateNote.en} Vehicle: ${desc}`};return `${role[lang]}\n\n${cmd[lang]}\n\nSTRICT RULES:
-1. NEVER invent specific numbers, mileage figures, repair costs or percentages
-2. Only describe problems genuinely documented for this exact model
-3. If unsure about a fact omit it or describe in general terms only
-4. First verify make+model is a real production car. If not, return ONLY: {"valid":false}
-
-Return ONLY valid JSON, no markdown:
-{"valid":true,"riskLevel":"low"|"medium"|"high","riskSummary":"2 sentences, no invented numbers","knownIssues":[{"severity":"critical"|"warning"|"ok","title":"short","detail":"problem type only, no invented stats"}],"inspectionChecklist":[{"category":"name","items":["item"]}],"questionsForSeller":["q1","q2","q3","q4","q5","q6"],"redFlags":["f1","f2","f3"],"tip":"1 sentence based on real knowledge"}
-If valid, return full JSON with "valid":true as first field.
-Give 5 knownIssues, 4 checklist categories (3 items each), 6 questions, 3 red flags.
-All cost estimates MUST be in EUR (€). Be specific to this exact model.`;}
-
-async function doAnalyse(){
-  const d=getForm();if(!d.make||!d.model){showToast(t('noMake'));return;}
-  if(credits<=0){openModal();showToast(t('noCredits'));return;}
-  const desc=buildDesc(d);currentDesc=desc;currentFormData=d;
-  const btn=document.getElementById('analyseBtn');btn.disabled=true;
-  document.getElementById('results').innerHTML=`<div class="loading"><div class="spin-ring"></div><div class="loading-t">${t('loadMsg')}</div><div class="loading-s">${t('loadSub')}</div></div>`;
-  try{
-    const res=await fetch('/api/analyse-car',{method:'POST',headers:{'Content-Type':'application/json','X-Turnstile-Token':turnstileToken||''},body:JSON.stringify({...d,lang})});
-    if(res.status===429){document.getElementById('results').innerHTML=`<div class="rsec" style="border-color:rgba(245,158,11,.3);color:var(--amber);text-align:center;padding:24px">⏳ ${t('errRateLimit')}</div>`;btn.disabled=false;return;}if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||res.statusText);}
-    const data=await res.json();
-    const raw=data.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
-    let r;
-    try{r=JSON.parse(raw);}catch(pe){let fixed=raw;if((fixed.match(/"/g)||[]).length%2!==0)fixed+='"';let depth=0;for(const c of fixed){if(c==='{'||c==='[')depth++;else if(c==='}'||c===']')depth--;}while(depth-->0)fixed+=']}';r=JSON.parse(fixed);}
-    if(r.valid===false){
-      document.getElementById('results').innerHTML=`<div class="rsec" style="border-color:rgba(245,158,11,.3);color:var(--amber);text-align:center;padding:24px">${t('invalidCar')}</div>`;
-      btn.disabled=false; return;
-    }
-    currentResult=r;credits--;saveCredits();updateCreditsUI();
-    renderResults(r,d);pushHistory(desc,r,d);updateBadges();
-  }catch(e){document.getElementById('results').innerHTML=`<div class="rsec" style="border-color:rgba(248,113,113,.3);color:var(--red);">${t('errPfx')}${e.message}</div>`;}
-  finally{btn.disabled=false;}
 }
 
 
@@ -587,6 +544,12 @@ const PB={fair:'b-green',high:'b-red',low:'b-amber'};
 const PK={fair:'pFair',high:'pHigh',low:'pLow'};
 function cap(s){return s?s[0].toUpperCase()+s.slice(1):'';}
 
+
+// HTML escaping — защита от XSS в данных от AI
+function esc(s){
+  if(s===null||s===undefined)return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 function renderResults(r,d,fromHistory=false){
   let h=`<div class="act-bar">
     <button class="btn btn-ghost" onclick="doShare()">🔗 ${t('btnShare')}</button>
@@ -595,12 +558,12 @@ function renderResults(r,d,fromHistory=false){
     <button class="btn btn-outline" onclick="doAddCompare()">⚖️ ${t('btnAddCmp')}</button>
     <button class="btn btn-ghost" onclick="doNew()">✦ ${t('btnNew')}</button>
   </div>`;
-    if(r.knownIssues?.length){h+=`<div class="rsec"><div class="rsec-hd">⚙ ${t('sIssues')}</div>`;r.knownIssues.forEach(i=>{h+=`<div class="issue"><div class="idot ${SD[i.severity]||'w'}"></div><div class="ibody"><strong>${i.title}</strong> <span class="badge ${SB[i.severity]||'b-amber'}">${t('sv'+cap(i.severity))}</span><p>${i.detail}</p></div></div>`;});h+=`</div>`;}
-  if(r.inspectionChecklist?.length){h+=`<div class="rsec"><div class="rsec-hd">🔍 ${t('sCheck')}</div>`;r.inspectionChecklist.forEach(cat=>{h+=`<div class="ccat">${cat.category}</div>`;cat.items.forEach(item=>{h+=`<div class="citem"><div class="idot g" style="margin-top:5px"></div><span>${item}</span></div>`;});});h+=`</div>`;}
-  if(r.questionsForSeller?.length){h+=`<div class="rsec"><div class="rsec-hd">💬 ${t('sQs')}</div>`;r.questionsForSeller.forEach((q,i)=>{h+=`<div class="qitem"><span class="qnum">${String(i+1).padStart(2,'0')}.</span><span>${q}</span></div>`;});h+=`</div>`;}
-  if(r.redFlags?.length){h+=`<div class="rsec rsec-flag"><div class="rsec-hd">🚩 ${t('sFlags')}</div>`;r.redFlags.forEach(f=>{h+=`<div class="rfitem"><div class="idot d" style="flex-shrink:0;margin-top:5px"></div><span>${f}</span></div>`;});h+=`</div>`;}
+    if(r.knownIssues?.length){h+=`<div class="rsec"><div class="rsec-hd">⚙ ${t('sIssues')}</div>`;r.knownIssues.forEach(i=>{h+=`<div class="issue"><div class="idot ${SD[i.severity]||'w'}"></div><div class="ibody"><strong>${esc(i.title)}</strong> <span class="badge ${SB[i.severity]||'b-amber'}">${t('sv'+cap(i.severity))}</span><p>${esc(i.detail)}</p></div></div>`;});h+=`</div>`;}
+  if(r.inspectionChecklist?.length){h+=`<div class="rsec"><div class="rsec-hd">🔍 ${t('sCheck')}</div>`;r.inspectionChecklist.forEach(cat=>{h+=`<div class="ccat">${esc(cat.category)}</div>`;cat.items.forEach(item=>{h+=`<div class="citem"><div class="idot g" style="margin-top:5px"></div><span>${esc(item)}</span></div>`;});});h+=`</div>`;}
+  if(r.questionsForSeller?.length){h+=`<div class="rsec"><div class="rsec-hd">💬 ${t('sQs')}</div>`;r.questionsForSeller.forEach((q,i)=>{h+=`<div class="qitem"><span class="qnum">${String(i+1).padStart(2,'0')}.</span><span>${esc(q)}</span></div>`;});h+=`</div>`;}
+  if(r.redFlags?.length){h+=`<div class="rsec rsec-flag"><div class="rsec-hd">🚩 ${t('sFlags')}</div>`;r.redFlags.forEach(f=>{h+=`<div class="rfitem"><div class="idot d" style="flex-shrink:0;margin-top:5px"></div><span>${esc(f)}</span></div>`;});h+=`</div>`;}
   
-  if(r.tip){h+=`<div class="rsec rsec-tip"><div class="rsec-hd">💡 ${t('sTip')}</div><p>${r.tip}</p></div>`;}
+  if(r.tip){h+=`<div class="rsec rsec-tip"><div class="rsec-hd">💡 ${t('sTip')}</div><p>${esc(r.tip)}</p></div>`;}
   const disc={de:"KI-Analyse auf Basis von Trainingsdaten und Live-Suche. Spezifische Zahlen sind Richtwerte. Vor dem Kauf: professionelle Fahrzeugprüfung empfohlen.",en:"AI analysis based on training data and live search. Specific figures are indicative only. Before purchase: professional vehicle inspection recommended.",ru:"Анализ на основе данных AI и живого поиска. Конкретные цифры носят ориентировочный характер. Перед покупкой рекомендуется профессиональный осмотр."};
   h+=`<div style="margin-bottom:12px;padding:10px 14px;background:rgba(255,255,255,.025);border:1px solid var(--bd);border-radius:var(--r);font-size:12px;color:var(--text3);display:flex;gap:8px;align-items:flex-start;line-height:1.55"><span style="flex-shrink:0">⚠️</span><span>${disc[lang]||disc.de}</span></div>`;
   h+=`<div id="src-placeholder"><div class="src-sec"><div class="rsec-hd">${t('srcTitle')}</div><div class="src-loading"><div class="spin-ring" style="width:18px;height:18px;border-width:2px;margin:0"></div>${t('srcLoading')}</div></div></div>`;
@@ -650,30 +613,30 @@ function generatePDF(){
   if(r.knownIssues?.length){
     const sev={critical:{c:'#E07A00',bg:'#fff8f0',lbl:t('svCritical')},warning:{c:'#D97706',bg:'#fffbeb',lbl:t('svWarning')},ok:{c:'#16A34A',bg:'#f0fdf4',lbl:t('svOk')}};
     let s=`<div class="section"><div class="sec-title">${t('sIssues')}</div>`;
-    r.knownIssues.forEach(i=>{const sv=sev[i.severity]||sev.warning;s+=`<div class="issue" style="border-color:${sv.c};background:${sv.bg}"><div class="issue-title">${i.title} <span class="badge" style="background:${sv.c};color:#fff">${sv.lbl}</span></div><div class="issue-detail">${i.detail}</div></div>`;});
+    r.knownIssues.forEach(i=>{const sv=sev[i.severity]||sev.warning;s+=`<div class="issue" style="border-color:${sv.c};background:${sv.bg}"><div class="issue-title">${esc(i.title)} <span class="badge" style="background:${sv.c};color:#fff">${sv.lbl}</span></div><div class="issue-detail">${esc(i.detail)}</div></div>`;});
     s+=`</div>`;sections.push(s);
   }
 
   if(r.inspectionChecklist?.length){
     let s=`<div class="section"><div class="sec-title">${t('sCheck')}</div>`;
-    r.inspectionChecklist.forEach(cat=>{s+=`<div class="check-cat">${cat.category}</div>`;cat.items.forEach(item=>{s+=`<div class="check-item">${item}</div>`;});});
+    r.inspectionChecklist.forEach(cat=>{s+=`<div class="check-cat">${esc(cat.category)}</div>`;cat.items.forEach(item=>{s+=`<div class="check-item">${esc(item)}</div>`;});});
     s+=`</div>`;sections.push(s);
   }
 
   if(r.questionsForSeller?.length){
     let s=`<div class="section"><div class="sec-title">${t('sQs')}</div>`;
-    r.questionsForSeller.forEach((q,i)=>{s+=`<div class="q-item"><span class="q-num">${String(i+1).padStart(2,'0')}.</span>${q}</div>`;});
+    r.questionsForSeller.forEach((q,i)=>{s+=`<div class="q-item"><span class="q-num">${String(i+1).padStart(2,'0')}.</span>${esc(q)}</div>`;});
     s+=`</div>`;sections.push(s);
   }
 
   if(r.redFlags?.length){
     let s=`<div class="section" style="background:#fff8f0;padding:10px 14px;border-radius:6px;border-left:4px solid #E07A00"><div class="sec-title" style="color:#c2410c">${t('sFlags')}</div>`;
-    r.redFlags.forEach(f=>{s+=`<div style="color:#c2410c;font-size:13px;padding:3px 0">⚠ ${f}</div>`;});
+    r.redFlags.forEach(f=>{s+=`<div style="color:#c2410c;font-size:13px;padding:3px 0">⚠ ${esc(f)}</div>`;});
     s+=`</div>`;sections.push(s);
   }
 
   if(r.tip){
-    sections.push(`<div class="section" style="background:#eff6ff;padding:10px 14px;border-radius:6px;border-left:4px solid #3B82F6"><div class="sec-title" style="color:#1e40af">${t('sTip')}</div><div style="color:#1e3a8a;font-size:13px">${r.tip}</div></div>`);
+    sections.push(`<div class="section" style="background:#eff6ff;padding:10px 14px;border-radius:6px;border-left:4px solid #3B82F6"><div class="sec-title" style="color:#1e40af">${t('sTip')}</div><div style="color:#1e3a8a;font-size:13px">${esc(r.tip)}</div></div>`);
   }
 
   const html=`<!DOCTYPE html><html lang="${lang}"><head><meta charset="UTF-8">
@@ -737,8 +700,8 @@ function buildEmailText(){
   b+='='.repeat(50)+'\n\n';
   b+=t('sRisk')+': '+t('r'+cap(r.riskLevel))+'\n';
   b+=r.riskSummary+'\n\n';
-  if(r.knownIssues?.length){b+=t('sIssues').toUpperCase()+':\n';r.knownIssues.forEach((i,n)=>{b+=`${n+1}. ${i.title} [${t('sv'+cap(i.severity))}]\n   ${i.detail}\n`;});b+='\n';}
-  if(r.questionsForSeller?.length){b+=t('sQs').toUpperCase()+':\n';r.questionsForSeller.forEach((q,n)=>{b+=`${n+1}. ${q}\n`;});b+='\n';}
+  if(r.knownIssues?.length){b+=t('sIssues').toUpperCase()+':\n';r.knownIssues.forEach((i,n)=>{b+=`${n+1}. ${esc(i.title)} [${t('sv'+cap(i.severity))}]\n   ${esc(i.detail)}\n`;});b+='\n';}
+  if(r.questionsForSeller?.length){b+=t('sQs').toUpperCase()+':\n';r.questionsForSeller.forEach((q,n)=>{b+=`${n+1}. ${esc(q)}\n`;});b+='\n';}
   if(r.redFlags?.length){b+=t('sFlags').toUpperCase()+':\n';r.redFlags.forEach(f=>{b+='⚠ '+f+'\n';});b+='\n';}
   
   if(r.tip){b+=t('sTip')+': '+r.tip+'\n\n';}
@@ -784,8 +747,7 @@ Include up to 4 findings with real URLs. All text in ${langName}.`;
     const isLocalFile = false; // always use server proxy
     const endpoint = isLocalFile ? 'https://api.anthropic.com/v1/messages' : '/api/analyse';
     const headers = {'Content-Type':'application/json'};
-    if (isLocalFile && typeof apiKey !== 'undefined' && apiKey) {
-      headers['x-api-key'] = apiKey;
+    if (false) {
       headers['anthropic-version'] = '2023-06-01';
       headers['anthropic-dangerous-direct-browser-access'] = 'true';
       headers['anthropic-beta'] = 'web-search-2025-03-05';
